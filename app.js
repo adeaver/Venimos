@@ -22,6 +22,6 @@ app.use(expressSession({secret: "notReallyASecret",
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect('mongodb://localhost/robbiesiegel');
+mongoose.connect('mongodb://pizza:thehutt@ds023478.mlab.com:23478/pizza4all');
 
 app.listen(3000);
