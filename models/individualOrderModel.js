@@ -1,9 +1,11 @@
 var mongoose = require('mongoose'); 
+var Schema = mongoose.Schema; 
+
 
 var individualOrderSchema = mongoose.Schema({ 
 	name: String,
 	wholeOrderId: Number,  
-	myOrder: [{type: Schema.ObjectId, ref: 'myOrder'}], 
+	myOrder: String, 
 	price: Number
 }, {'collection' : 'wholeOrders'}); 
 
