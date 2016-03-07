@@ -28,12 +28,38 @@ pizzaRoutes.getStoreMenu = function(req, res) {
 	});
 };
 
-// pizzaRoutes.getOrderPrice = function(req, res) {
-// 	var order = new pizzapi.Order({
-// 		customer:req.params.customer_name,
-// 		storeID:req.params.store_id,
-// 		deliveryMethod:req.params.method
-// 	});
-// }
+pizzaRoutes.getOrderPrice = function(req, res) {
+ 
+	var thePresident = new pizzapi.Customer(
+	  {
+	      firstName: 'Barack',
+	      lastName: 'Obama',
+	      address: '700 Pennsylvania Avenue, Washington, DC',
+	      email: 'barack@whitehouse.gov'
+	  }
+	);
+
+	var order = new pizzapi.Order({
+		customer:thePresident,
+		storeID:req.params.store_id,
+		deliveryMethod:req.params.method
+	});
+
+	order.addItem(
+	  new pizzapi.Item(
+	      {
+	          code: 'BBOWL',
+	          options: [],
+	          quantity: 1
+	      }
+	  )
+	);
+
+	  order.price(
+	      function(result) {
+	          res.send(result);
+	      }
+	  );
+}
 
 module.exports = pizzaRoutes;
