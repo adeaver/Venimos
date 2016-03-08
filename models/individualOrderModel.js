@@ -3,7 +3,11 @@ var mongoose = require('mongoose');
 var individualOrderSchema = mongoose.Schema({ 
 	name: String,
 	wholeOrderId: Number,  
-	myOrder: [{type: Schema.ObjectId, ref: 'myOrder'}], 
+	myOrder: [{
+		quantity:Number,
+		id:String,
+		price:Number
+	}], 
 	price: Number
 }, {'collection' : 'wholeOrders'}); 
 
