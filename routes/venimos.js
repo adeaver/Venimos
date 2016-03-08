@@ -76,12 +76,18 @@ routes.getIdGET = function(req, res){
 routes.apiAccess = function(req, res){ 
 	var splitwiseApi = authApi.getSplitwiseApi(req.query.oauth_token, req.query.oauth_verifier);  
 	splitwiseApi.isServiceOk().then(function(merp){ 
-		console.log("success"); 
-		res.send("success"); 
+		if(splitwiseApi.oAuthToken === undefined) {
+			res.redirect('/');
+		} else {
+			// display ordering page
+			res.send('success');
+		}
 	}, function(error){ 
 		console.log(error);
-		res.send(error);  
+		res.redirect('/'); 
 	})
+
+
 
 }
 

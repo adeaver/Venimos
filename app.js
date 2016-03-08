@@ -20,9 +20,9 @@ var venimos = require('./routes/venimos');
 
 mongoose.connect('mongodb://pizza:thehutt@ds023478.mlab.com:23478/pizza4all');
 
-app.get('/api/', function(req, res){
-    res.sendfile('./views/notReallyIndex.html');
-});
+// app.get('/api/', function(req, res){
+//     res.sendfile('./views/index.html');
+// });
 app.get('/api/login', venimos.login); 
 app.get('/api/home', venimos.home);
 // app.get('/api/oauth', venimos.authenticate);

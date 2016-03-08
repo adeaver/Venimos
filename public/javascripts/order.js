@@ -22,11 +22,20 @@ app.controller('orderController', function ($scope, $http) {
 
 	// Functions
 
-	$scope.splitwiseSignIn = function() {
+	$scope.authenticate = function() {
 		// This should sign the user in and check to see if they're already a part of an existing order
 		// This should assign order to them
 
-		$scope.splitwiseUser = true;
+		    console.log("Are you in authenticate?")
+		    $http.get('/api/login')
+		    .success(function(url){ 
+		      window.location.href = url;
+		    })
+		    .error(function(err){ 
+		      if(err){ 
+		        console.log("There has been an error", err); 
+		      }
+		    })
 	}
 
 	$scope.searchAddress = function() {
