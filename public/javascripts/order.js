@@ -8,6 +8,11 @@ app.controller('orderController', function ($scope, $http) {
 	$scope.addresses = [];
 	$scope.menu = null;
 
+	$scope.coupons = null;
+	$scope.products = null;
+	$scope.variants = null;
+	$scope.toppings = null;
+
 	// Models
 
 	$scope.street = '';
