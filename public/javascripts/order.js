@@ -6,7 +6,6 @@ app.controller('orderController', function ($scope, $http) {
 	$scope.lookupAddress = false;
 
 	$scope.addresses = [];
-	$scope.menu = null;
 
 	$scope.coupons = null;
 	$scope.products = null;
@@ -52,7 +51,10 @@ app.controller('orderController', function ($scope, $http) {
 		
 		$http.get('/menu/' + id)
 			.then(function(response) {
-				$scope.menu = response.data;
+				$scope.coupons = response.data.coupons;
+				$scope.products = response.data.products;
+				$scope.variants = response.data.variants;
+				$scope.toppings = response.data.toppings;
 			});
 	}
 });

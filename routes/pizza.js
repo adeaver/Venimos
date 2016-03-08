@@ -36,7 +36,7 @@ pizzaRoutes.getStoreMenu = function(req, res) {
 			var sendData = {}
 
 			sendData.coupons = objectsToList(parseData.Coupons);
-			sendData.products = objectsToList(parseData.Products);
+			sendData.products = parseProducts(objectsToList(parseData.Products));
 			sendData.toppings = objectsToList(parseData.Toppings);
 			sendData.variants = objectsToList(parseData.Variants);
 
@@ -54,6 +54,23 @@ function objectsToList(data) {
 	}
 
 	return output;
+}
+
+function parseProducts(data) {
+	var output = {};
+
+	for(var index = 0; index < data.length; index++) {
+		var productType = data[index].ProductType;
+
+		if(productType in output) {
+			output[productType].push(data[index]);
+		} else {
+			output[productType] = [];
+			output[productType].push(data[index]);
+		}
+	}
+
+	return output
 }
 
 module.exports = pizzaRoutes;
