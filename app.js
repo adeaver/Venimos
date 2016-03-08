@@ -25,10 +25,11 @@ mongoose.connect('mongodb://pizza:thehutt@ds023478.mlab.com:23478/pizza4all');
 // });
 app.get('/api/login', venimos.login); 
 app.get('/api/home', venimos.home);
-// app.get('/api/oauth', venimos.authenticate);
+
 app.get('/api/idGET', venimos.getIdGET); 
 app.post('/api/newOrder', venimos.addNewOrderPOST);
 app.get('/api/oauthCallback', venimos.apiAccess)
+app.get('/api/currentUser', venimos.getUser);
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 app.get('/', pizza.home);

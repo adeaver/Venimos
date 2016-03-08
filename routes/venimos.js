@@ -6,6 +6,7 @@ var oneOrder = require('../models/individualOrderModel');
 var wholeOrder = require('../models/wholeOrderModel');
 var oauthIds = require('../oauth'); 
 var AuthApi = require('splitwise-node');
+var https = require('https');
 routes = {}; 
 var authApi = new AuthApi(oauthIds.consumerKey, oauthIds.consumerSecret);
 
@@ -80,15 +81,29 @@ routes.apiAccess = function(req, res){
 			res.redirect('/');
 		} else {
 			// display ordering page
+			//console.log();
 			res.send('success');
+			//res.send('success');
 		}
 	}, function(error){ 
 		console.log(error);
 		res.redirect('/'); 
 	})
+}
 
+routes.getUser = function(req, res) {
+	https.get('https://secure.splitwise.com/api/v3.0/get_current_user', function(response) {
+		var finalData = '';
+		response.setEncoding('utf-8');
 
+		response.on('data', function(data) {
+			finalData += data;
+		});
 
+		response.on('end', function() {
+			res.send(finalData);
+		});
+	});
 }
 
 module.exports = routes; 
