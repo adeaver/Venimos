@@ -1,10 +1,15 @@
 var pizzapi = require('dominos');
 var http = require('https');
 var bl = require('bl');
+var path = require('path');
 
 var menuURL = "https://order.dominos.com/power/store/STORE_ID/menu?lang=en&structured=true"
 
 var pizzaRoutes = {};
+
+pizzaRoutes.home = function(req, res) {
+	res.sendFile(path.join(__dirname, '../views', 'index.html'));
+}
 
 pizzaRoutes.getStores = function(req, res) {
 	var address = req.params.address;
@@ -39,40 +44,6 @@ pizzaRoutes.getStoreMenu = function(req, res) {
 		});
 	});
 };
-
-pizzaRoutes.getOrderPrice = function(req, res) {
- 
-	var thePresident = new pizzapi.Customer(
-	  {
-	      firstName: 'Barack',
-	      lastName: 'Obama',
-	      address: '700 Pennsylvania Avenue, Washington, DC',
-	      email: 'barack@whitehouse.gov'
-	  }
-	);
-
-	var order = new pizzapi.Order({
-		customer:thePresident,
-		storeID:req.params.store_id,
-		deliveryMethod:req.params.method
-	});
-
-	order.addItem(
-	  new pizzapi.Item(
-	      {
-	          code: 'BBOWL',
-	          options: [],
-	          quantity: 1
-	      }
-	  )
-	);
-
-	  order.price(
-	      function(result) {
-	          res.send(result);
-	      }
-	  );
-}
 
 function objectsToList(data) {
 	var output = [];
