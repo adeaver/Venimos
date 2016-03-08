@@ -4,7 +4,8 @@ var wholeOrderSchema = mongoose.Schema({
 	firstName: String,
 	lastName: String,
 	address: String,
-	email: String, 
+	email: String,
+	storeId: String, 
 	totalPrice: Number,
 	friends: [{type: Schema.ObjectId, ref: 'friends'}] 
 }, {'collection' : 'wholeOrders'}); 
