@@ -1,9 +1,7 @@
 var express = require('express');
 var path = require('path');
-var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var passport = require('passport');
-var expressSession = require('express-session');
+var bodyParser = require('body-parser');
 var app = express();
 var AuthApi = require('splitwise-node');
 var oauthIds = require('./oauth'); 
@@ -15,11 +13,8 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(expressSession({secret: "notReallyASecret",
-	resave:false,
-	saveUninitialized:false}));
-app.use(passport.initialize());
-app.use(passport.session());
+
+var pizza = require('./routes/pizza.js');
 
 var venimos = require('./routes/venimos'); 
 
@@ -35,4 +30,9 @@ app.get('/api/idGET', venimos.getIdGET);
 app.post('/api/newOrder', venimos.addNewOrderPOST);
 app.get('/api/oauthCallback', venimos.apiAccess)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+
+app.get('/', pizza.home);
+app.get('/store/:store_type/:address', pizza.getStores);
+app.get('/menu/:store_id', pizza.getStoreMenu);
+
 app.listen(3000);

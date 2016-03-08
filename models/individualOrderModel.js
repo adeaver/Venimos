@@ -4,8 +4,13 @@ var Schema = mongoose.Schema;
 
 var individualOrderSchema = mongoose.Schema({ 
 	name: String,
+	splitwiseId: String,
 	wholeOrderId: Number,  
-	myOrder: String, 
+	myOrder: [{
+		quantity:Number,
+		id:String,
+		price:Number
+	}],
 	price: Number
 }, {'collection' : 'wholeOrders'}); 
 

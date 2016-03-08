@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="venimos">
+  <head>
+    <meta charset="utf-8">
+    <title>Venimos</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="./javascripts/order.js"></script>
+  </head>
+  <body ng-controller="orderController">
+
+	<!-- First Screen -->
+	<div ng-if="splitwiseUser === null">
+		<!-- Sign in with Splitwise -->
+		<button ng-click="$parent.splitwiseSignIn()">Sign In With Splitwise</button>
+	</div>
+
+	<!-- Lookup Address (if user has not joined order) -->
+	<div ng-if="order === null && splitwiseUser !== null && lookupAddress === false">
+		<form>
+			<input type="text" placeholder="Street Address" ng-model="$parent.street" /><br />
+			<input type="text" placeholder="City" ng-model="$parent.city" />,
+			<input type="text" placeholder="State" ng-model="$parent.state" />
+			<input type="number" placeholder="Zipcode" ng-model="$parent.zip" /><br />
+			<button ng-click="$parent.searchAddress()">Look Up This Address</button>
+		</form>
+	</div>
+
+	<!-- Choose address -->
+	<div ng-if="order === null && splitwiseUser !== null && lookupAddress === true">
+		<ul ng-repeat="store in $parent.addresses">
+			<li ng-click="$parent.chooseStore(store.StoreID)">{{store.AddressDescription}}</li>
+		</ul>
+		<button ng-click="$parent.lookupAddress = false">Go back</button>
+	</div>
+
+	<!-- Menu from store -->
+	<div ng-if="order !== null">
+		{{products}}
+	</div>
+
+  </body>
+</html>
