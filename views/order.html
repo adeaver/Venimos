@@ -41,23 +41,45 @@
 
 		<h1>Products</h1>
 		<div ng-repeat="productKey in $parent.productKeys">
-			<h2>{{productKey}}</h2>
-			<ul ng-repeat="product in $parent.products[productKey]">
-				<li>
+			<h2 ng-click="$parent.showProductKey(productKey)">{{productKey}}</h2>
+			<ul>
+				<li ng-if="$parent.productKeyToShow === productKey" 
+					ng-repeat="product in $parent.products[productKey]"
+					ng-click="$parent.showProductTypes(product.Code)">
 					{{product.Name}}<br />-- {{product.Description}}
-					<h3>Types:</h3>
-					<ul ng-repeat="variant in product.Variants">
-						<li ng-click="$parent.addToOrder($parent.variants[variant].Code, $parent.variants[varient].Price)">
-							{{$parent.variants[variant].Name}} -- ${{$parent.variants[variant].Price}}
-						</li>
-					</ul>
-					<h3 ng-if="product.AvailableToppings.length > 0">Toppings:</h3>
-					<ul ng-repeat="topping in product.AvailableToppings">
-						<li>
-							{{$parent.toppings[topping.name].Name}}
-							<span ng-if="$parent.checkIsDefault(product.DefaultToppings, topping.name)"> -- is Default</span>
-						</li>
-					</ul>
+
+					<div ng-if="$parent.productTypeToShow == product.Code">
+						<h3>Types:</h3>
+						<ul>
+							<label ng-repeat="variant in product.Variants">
+								<input class="orderRadio" type="radio" 
+								value="{{$parent.variants[variant].Code}}"
+								name="{{$parent.variants[variant].Name}}" />
+								{{$parent.variants[variant].Name}} -- ${{$parent.variants[variant].Price}} --
+
+								Quantity: <input type="number" min="1" max="10"
+								value="1" name="qty_{{$parent.variants[variant].Code}}" /><br />
+							</label>
+						</ul>
+
+						<h3 ng-if="product.AvailableToppings.length > 0">Toppings:</h3>
+						<ul>
+							<label ng-repeat="topping in product.AvailableToppings">
+								<input ng-if="$parent.checkIsDefault(product.DefaultToppings, topping.name)" type="checkbox" 
+								class="toppingCheckbox" value="{{topping.name}}" name="{{topping.name}}" checked/>
+
+								<input ng-if="!$parent.checkIsDefault(product.DefaultToppings, topping.name)" type="checkbox" 
+								class="toppingCheckbox" value="{{topping.name}}" name="{{topping.name}}" />
+
+								{{$parent.toppings[topping.name].Name}}<br />
+							</label>
+						</ul>
+
+						<button ng-click="$parent.addToOrder()">
+							Add to Order
+						</button>
+
+					</div>
 				</li>
 			</ul>
 		</div>

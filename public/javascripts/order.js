@@ -26,6 +26,13 @@ app.controller('orderController', function ($scope, $http) {
 	$scope.state = '';
 	$scope.zip = '';
 
+	$scope.radioOrder = 'model';
+
+
+	// display variables
+	$scope.productKeyToShow = null;
+	$scope.productTypeToShow = null;
+
 
 	// TODO ADD USER INFORMATION HERE
 	$scope.splitwiseUser = true;
@@ -66,8 +73,15 @@ app.controller('orderController', function ($scope, $http) {
 		alert(code);
 	}
 
-	$scope.addToOrder = function(code, price) {
-		alert(code);
+	$scope.addToOrder = function() {
+		// This can be replaced by an directive with querySelector
+		var orderRadio = document.getElementsByClassName('orderRadio');
+
+		for(var index = 0; index < orderRadio.length; index++) {
+			if(orderRadio[index].checked) {
+				console.log(orderRadio[index].value);
+			}
+		}
 	}
 
 	// Formatting functions
@@ -79,5 +93,21 @@ app.controller('orderController', function ($scope, $http) {
 
 	$scope.checkIsDefault = function(defaultToppings, topping) {
 		return defaultToppings.indexOf(topping) != -1 || false;
+	}
+
+	// Display Functions
+	$scope.showProductKey = function(key) {
+		$scope.productKeyToShow = key;
+		$scope.productTypeToShow = null;
+		$scope.toppingsToShow = null;
+	}
+
+	$scope.showProductTypes = function(key) {
+		$scope.productTypeToShow = key;
+		$scope.toppingsToShow = null;
+	}
+
+	$scope.showProductToppings = function(key) {
+		$scope.toppingsToShow = key;
 	}
 });
