@@ -40,7 +40,6 @@ app.controller('orderController', function ($scope, $http) {
 		} else {
 			var search = $scope.street + ', ' + $scope.city + ', ' + $scope.state + ', ' + $scope.zip;
 
-			console.log('/store/delivery/' + search);
 			$http.get('/store/delivery/' + search)
 				.then(function(response) {
 					$scope.addresses = response.data.result.Stores;
@@ -71,7 +70,14 @@ app.controller('orderController', function ($scope, $http) {
 		alert(code);
 	}
 
+	// Formatting functions
+
 	$scope.couponAvailable = function(dates) {
 		return dates.indexOf($scope.date) != -1 || false;
+	}
+
+
+	$scope.checkIsDefault = function(defaultToppings, topping) {
+		return defaultToppings.indexOf(topping) != -1 || false;
 	}
 });

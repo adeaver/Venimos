@@ -45,9 +45,17 @@
 			<ul ng-repeat="product in $parent.products[productKey]">
 				<li>
 					{{product.Name}}<br />-- {{product.Description}}
+					<h3>Types:</h3>
 					<ul ng-repeat="variant in product.Variants">
 						<li ng-click="$parent.addToOrder($parent.variants[variant].Code, $parent.variants[varient].Price)">
 							{{$parent.variants[variant].Name}} -- ${{$parent.variants[variant].Price}}
+						</li>
+					</ul>
+					<h3 ng-if="product.AvailableToppings.length > 0">Toppings:</h3>
+					<ul ng-repeat="topping in product.AvailableToppings">
+						<li>
+							{{$parent.toppings[topping.name].Name}}
+							<span ng-if="$parent.checkIsDefault(product.DefaultToppings, topping.name)"> -- is Default</span>
 						</li>
 					</ul>
 				</li>
