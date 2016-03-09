@@ -40,27 +40,20 @@ ordering.createOrder = function(req, res) {
 // NEED TO IMPLEMENT
 ordering.addCollaborator = function(req, res) {
 	var wOrderId = req.body.orderId;
-	var collaboratorSplitwiseId = req.body.collaboratorSplitWiseId;
+	var collaboratorSplitwiseId = req.body.collaboratorSplitwiseId;
 	var collaboratorName = req.body.collaboratorName;
 
 	// Make sure you can't add a collaborator that's already added
-	wOrder.findOneAndUpdate({_id:wOrderId}, {friendsOrders:{$push:collaboratorSplitwiseId}}, {new:true}, function (err, order) {
+	wOrder.findOneAndUpdate({_id:wOrderId}, {$push:{friendsOrders:collaboratorSplitwiseId}}, {new:true}, function (err, order) {
 		if(err) {
 			res.status(500).send('Error adding collaborator');
 		}
 
-		createIOrder = createIOrderFromWOrder(wOrderId, collaboratorName, collaboratorSplitwiseId);
-
-		createdIOrder.save(function(err, nOrder) {
-			if(err) {
-				res.status(500).send('Error adding collaborator');
-			}
-
-			res.send(nOrder);
-		});
+		res.send(order)
 	});
 }
 
+// works
 ordering.createIndividualOrder = function(req, res) {
 	var splitwiseId = req.body.splitwiseId;
 	var name = req.body.name;
@@ -83,6 +76,7 @@ ordering.createIndividualOrder = function(req, res) {
 	})
 }
 
+// works
 ordering.getIndividualOrder = function(req, res) {
 	var splitwiseId = req.params.splitwise_id;
 
@@ -132,6 +126,10 @@ ordering.addToOrder = function(req, res) {
 		res.send(order);
 
 	})
+}
+
+ordering.finalizeOrder = function(req, res) {
+
 }
 
 module.exports = ordering;

@@ -37,17 +37,17 @@ app.controller('orderController', function ($scope, $http) {
 
 	// TODO ADD USER INFORMATION HERE
 	$scope.splitwiseUser = {
-		id:'12345',
-		firstName:'Millard',
-		lastName:'Fillmore',
-		email:'millard.fillmore@POTUS.gov'
-	};
-
-	$scope.splitwiseFriends = [{
 		id:'23456',
 		firstName:'William Howard',
 		lastName:'Taft',
 		email:'imreallyfat@POTUS.gov'
+	};
+
+	$scope.splitwiseFriends = [{
+		id:'12345',
+		firstName:'Millard',
+		lastName:'Fillmore',
+		email:'millard.fillmore@POTUS.gov'
 	}, {
 		id:'34567',
 		firstName:'Theodore',
@@ -149,8 +149,26 @@ app.controller('orderController', function ($scope, $http) {
 			toppings:toppings.join(',')
 		}).then(function(response) {
 			// This should add something to the current order
-			console.log(response.data);
+			$scope.individualOrder = response.data[0];
 		})
+	}
+
+	$scope.addCollaborator = function(first, last, id) {
+		var name = first + " " + last;
+		
+		$http.post('/addCollaborator', {
+			collaboratorName:name,
+			collaboratorSplitwiseId:id,
+			orderId:$scope.order._id
+		}).then(function(response) {
+			$scope.order = response.data;
+
+			$http.post('/createIndividualOrder', {
+				name:name,
+				splitwiseId:id,
+				wholeOrderId:$scope.order._id
+			});
+		});
 	}
 
 	// Formatting functions
@@ -162,6 +180,10 @@ app.controller('orderController', function ($scope, $http) {
 
 	$scope.checkIsDefault = function(defaultToppings, topping) {
 		return defaultToppings.indexOf(topping) != -1 || false;
+	}
+
+	$scope.isAlreadyCollaborator = function(id) {
+		return $scope.order.friendsOrders.indexOf(id) != -1 || false;
 	}
 
 	// Display Functions

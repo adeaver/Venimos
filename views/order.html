@@ -88,6 +88,17 @@
 			</ul>
 		</div>
 	</div>
+
+	<div ng-if="order !== null && isOrderOwner">
+		<h1>Friends</h1>
+		<ul>
+			<li ng-repeat="friend in $parent.splitwiseFriends"
+				ng-if="!$parent.isAlreadyCollaborator(friend.id)"
+				ng-click="$parent.addCollaborator(friend.firstName, friend.lastName, friend.id)">
+				{{friend.firstName}} {{friend.lastName}}
+			</li>
+		</ul>
+	</div>
 </body>
 
 </html>
