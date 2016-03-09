@@ -10,7 +10,12 @@ function mainController($scope, $http) {
     });
 
 
-  $scope.authenticate = function(){ 
+
+}
+
+function oauthController($scope, $http){ 
+
+    $scope.authenticate = function(){ 
     console.log("Are you in authenticate?")
     $http.get('/api/login')
     .success(function(url){ 
