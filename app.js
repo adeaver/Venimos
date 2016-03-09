@@ -33,6 +33,7 @@ app.get('/api/currentUser', venimos.getUser);
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 app.get('/', pizza.home);
+app.get('/order', pizza.order);
 app.get('/store/:store_type/:address', pizza.getStores);
 app.get('/menu/:store_id', pizza.getStoreMenu);
 

@@ -11,6 +11,10 @@ pizzaRoutes.home = function(req, res) {
 	res.sendFile(path.join(__dirname, '../views', 'index.html'));
 }
 
+pizzaRoutes.order = function(req, res) {
+	res.sendFile(path.join(__dirname, '../views', 'order.html'));
+}
+
 pizzaRoutes.getStores = function(req, res) {
 	var address = req.params.address;
 	var type = req.params.store_type;
@@ -37,8 +41,8 @@ pizzaRoutes.getStoreMenu = function(req, res) {
 
 			sendData.coupons = objectsToList(parseData.Coupons);
 			sendData.products = parseProducts(objectsToList(parseData.Products));
-			sendData.toppings = objectsToList(parseData.Toppings);
-			sendData.variants = objectsToList(parseData.Variants);
+			sendData.toppings = parseData.Toppings;
+			sendData.variants = parseData.Variants;
 
 			res.json(sendData);
 		});
@@ -58,6 +62,7 @@ function objectsToList(data) {
 
 function parseProducts(data) {
 	var output = {};
+	var finalOutput = {};
 
 	for(var index = 0; index < data.length; index++) {
 		var productType = data[index].ProductType;
@@ -70,7 +75,10 @@ function parseProducts(data) {
 		}
 	}
 
-	return output
+	finalOutput.keys = Object.keys(output);
+	finalOutput.productInfo = output;
+
+	return finalOutput;
 }
 
 module.exports = pizzaRoutes;

@@ -7,8 +7,15 @@ app.controller('orderController', function ($scope, $http) {
 
 	$scope.addresses = [];
 
+	$scope.dateNum = new Date().getDay();
+	$scope.dates = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+	$scope.date = $scope.dates[$scope.dateNum];
+
+	// Store information keys
+
 	$scope.coupons = null;
 	$scope.products = null;
+	$scope.productKeys = null;
 	$scope.variants = null;
 	$scope.toppings = null;
 
@@ -20,23 +27,11 @@ app.controller('orderController', function ($scope, $http) {
 	$scope.zip = '';
 
 
+	// TODO ADD USER INFORMATION HERE
+	$scope.splitwiseUser = true;
+
+
 	// Functions
-
-	$scope.authenticate = function() {
-		// This should sign the user in and check to see if they're already a part of an existing order
-		// This should assign order to them
-
-		    console.log("Are you in authenticate?")
-		    $http.get('/api/login')
-		    .success(function(url){ 
-		      window.location.href = url;
-		    })
-		    .error(function(err){ 
-		      if(err){ 
-		        console.log("There has been an error", err); 
-		      }
-		    })
-	}
 
 	$scope.searchAddress = function() {
 		if($scope.street === '' || $scope.city === '' ||
@@ -61,9 +56,22 @@ app.controller('orderController', function ($scope, $http) {
 		$http.get('/menu/' + id)
 			.then(function(response) {
 				$scope.coupons = response.data.coupons;
-				$scope.products = response.data.products;
+				$scope.products = response.data.products.productInfo;
+				$scope.productKeys = response.data.products.keys;
 				$scope.variants = response.data.variants;
 				$scope.toppings = response.data.toppings;
 			});
+	}
+
+	$scope.selectCoupon = function(code) {
+		alert(code);
+	}
+
+	$scope.addToOrder = function(code, price) {
+		alert(code);
+	}
+
+	$scope.couponAvailable = function(dates) {
+		return dates.indexOf($scope.date) != -1 || false;
 	}
 });
