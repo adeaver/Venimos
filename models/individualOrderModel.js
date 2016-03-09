@@ -12,7 +12,7 @@ var individualOrderSchema = mongoose.Schema({
 		price:Number
 	}],
 	price: Number
-}, {'collection' : 'wholeOrders'}); 
+}); 
 
 var individualOrder = mongoose.model('individualOrders',  individualOrderSchema);
 module.exports = individualOrder; 

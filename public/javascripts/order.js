@@ -96,6 +96,7 @@ app.controller('orderController', function ($scope, $http) {
 		}
 
 		// ADD ITEM TO ORDER
+		console.log(toppings.join(','));
 	}
 
 	// Formatting functions
