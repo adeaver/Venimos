@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({
 app.use(express.static(path.join(__dirname, 'public')));
 
 var pizza = require('./routes/pizza.js');
-
+var ordering = require('./routes/ordering.js');
 var venimos = require('./routes/venimos'); 
 
 mongoose.connect('mongodb://pizza:thehutt@ds023478.mlab.com:23478/pizza4all');
@@ -36,5 +36,12 @@ app.get('/', pizza.home);
 app.get('/order', pizza.order);
 app.get('/store/:store_type/:address', pizza.getStores);
 app.get('/menu/:store_id', pizza.getStoreMenu);
+
+app.get('/individualOrder/:splitwise_id', ordering.getIndividualOrder);
+app.get('/wholeOrder/:splitwise_id', ordering.getWholeOrder);
+
+app.post('/createOrder', ordering.createOrder);
+app.post('/addToOrder', ordering.addToOrder);
+app.post('/addCollaborator', ordering.addCollaborator);
 
 app.listen(3000);

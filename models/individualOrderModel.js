@@ -8,8 +8,9 @@ var individualOrderSchema = mongoose.Schema({
 	wholeOrderId: Number,  
 	myOrder: [{
 		quantity:Number,
-		id:String,
-		price:Number
+		code:String,
+		price:Number,
+		toppings:{type:Array}
 	}],
 	price: Number
 }); 
