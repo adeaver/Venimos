@@ -58,7 +58,8 @@
 								{{$parent.variants[variant].Name}} -- ${{$parent.variants[variant].Price}} --
 
 								Quantity: <input type="number" min="1" max="10"
-								value="1" name="qty_{{$parent.variants[variant].Code}}" /><br />
+								value="1" name="qty_{{$parent.variants[variant].Code}}" 
+								id="qty_{{$parent.variants[variant].Code}}" /><br />
 							</label>
 						</ul>
 

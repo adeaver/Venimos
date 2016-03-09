@@ -76,12 +76,26 @@ app.controller('orderController', function ($scope, $http) {
 	$scope.addToOrder = function() {
 		// This can be replaced by an directive with querySelector
 		var orderRadio = document.getElementsByClassName('orderRadio');
+		var orderCheck = document.getElementsByClassName('toppingCheckbox');
+
+		var toppings = [];
 
 		for(var index = 0; index < orderRadio.length; index++) {
 			if(orderRadio[index].checked) {
-				console.log(orderRadio[index].value);
+				var orderId = orderRadio[index].value;
+				var quantity = document.getElementById('qty_' + orderRadio[index].value).value;
+				break;
 			}
 		}
+
+		// TODO add quantities for checked ingredients
+		for(var index = 0; index < orderCheck.length; index++) {
+			if(orderCheck[index].checked) {
+				toppings.push(orderCheck[index].value);
+			}
+		}
+
+		// ADD ITEM TO ORDER
 	}
 
 	// Formatting functions
