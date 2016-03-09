@@ -1,9 +1,10 @@
 var app = angular.module('venimos', []);
 
 app.controller('orderController', function ($scope, $http) {
-	$scope.splitwiseUser = null;
 	$scope.order = null;
+	$scope.individualOrder = null;
 	$scope.lookupAddress = false;
+	$scope.isOrderOwner = false;
 
 	$scope.addresses = [];
 
@@ -35,8 +36,39 @@ app.controller('orderController', function ($scope, $http) {
 
 
 	// TODO ADD USER INFORMATION HERE
-	$scope.splitwiseUser = true;
+	$scope.splitwiseUser = {
+		id:'12345',
+		firstName:'Millard',
+		lastName:'Fillmore',
+		email:'millard.fillmore@POTUS.gov'
+	};
 
+	$scope.splitwiseFriends = [{
+		id:'23456',
+		firstName:'William Howard',
+		lastName:'Taft',
+		email:'imreallyfat@POTUS.gov'
+	}, {
+		id:'34567',
+		firstName:'Theodore',
+		lastName:'Roosevelt',
+		email:'teddy@POTUS.gov'
+	}];
+
+
+	$http.get('/wholeOrder/' + $scope.splitwiseUser.id)
+		.then(function(response) {
+			if(response.data.length > 0) {
+				$scope.order = response.data[0];
+				$scope.isOrderOwner = $scope.order.splitwiseId == $scope.splitwiseUser.id;
+				$scope.getMenu($scope.order.storeId);
+			}
+		});
+
+	$http.get('/individualOrder/' + $scope.splitwiseUser.id)
+		.then(function(response) {
+			$scope.individualOrder = response.data[0];
+		});
 
 	// Functions
 
@@ -48,7 +80,7 @@ app.controller('orderController', function ($scope, $http) {
 			var search = $scope.street + ', ' + $scope.city + ', ' + $scope.state + ', ' + $scope.zip;
 
 			$http.get('/store/delivery/' + search)
-				.then(function(response) {
+				.then(function (response) {
 					$scope.addresses = response.data.result.Stores;
 					$scope.lookupAddress = true;
 				});
@@ -57,16 +89,28 @@ app.controller('orderController', function ($scope, $http) {
 
 	$scope.chooseStore = function(id) {
 		// This method should create an order
-		$scope.order = true;
-		
-		$http.get('/menu/' + id)
-			.then(function(response) {
-				$scope.coupons = response.data.coupons;
-				$scope.products = response.data.products.productInfo;
-				$scope.productKeys = response.data.products.keys;
-				$scope.variants = response.data.variants;
-				$scope.toppings = response.data.toppings;
+
+		var address = $scope.street + ', ' + $scope.city + ', ' + $scope.state + ', ' + $scope.zip;
+
+		$http.post('/createOrder/', {
+			firstName:$scope.splitwiseUser.firstName,
+			lastName:$scope.splitwiseUser.lastName,
+			email:$scope.splitwiseUser.email,
+			splitwiseId:$scope.splitwiseUser.id,
+			address:address,
+			storeId:id
+		}).then(function (response) {
+			$scope.order = response.data;
+			$scope.isOrderOwner = true;
+
+			$http.post('/createIndividualOrder', {
+				splitwiseId:$scope.splitwiseUser.id,
+				wholeOrderId:$scope.order._id,
+				name:$scope.splitwiseUser.firstName + " " + $scope.splitwiseUser.lastName
 			});
+		});
+		
+		$scope.getMenu(id);
 	}
 
 	$scope.selectCoupon = function(code) {
@@ -83,7 +127,8 @@ app.controller('orderController', function ($scope, $http) {
 		for(var index = 0; index < orderRadio.length; index++) {
 			if(orderRadio[index].checked) {
 				var orderId = orderRadio[index].value;
-				var quantity = document.getElementById('qty_' + orderRadio[index].value).value;
+				var quantity = document.getElementById('qty_' + orderId).value;
+				var price = document.getElementById('price_' + orderId).value;
 				break;
 			}
 		}
@@ -96,7 +141,16 @@ app.controller('orderController', function ($scope, $http) {
 		}
 
 		// ADD ITEM TO ORDER
-		console.log(toppings.join(','));
+		$http.post('/addToOrder', {
+			splitwiseId:$scope.splitwiseUser.id,
+			itemCode:orderId,
+			price:price,
+			quantity:quantity,
+			toppings:toppings.join(',')
+		}).then(function(response) {
+			// This should add something to the current order
+			console.log(response.data);
+		})
 	}
 
 	// Formatting functions
@@ -124,5 +178,17 @@ app.controller('orderController', function ($scope, $http) {
 
 	$scope.showProductToppings = function(key) {
 		$scope.toppingsToShow = key;
+	}
+
+	// Other functions
+	$scope.getMenu = function(id) {
+		$http.get('/menu/' + id)
+			.then(function(response) {
+				$scope.coupons = response.data.coupons;
+				$scope.products = response.data.products.productInfo;
+				$scope.productKeys = response.data.products.keys;
+				$scope.variants = response.data.variants;
+				$scope.toppings = response.data.toppings;
+			});
 	}
 });

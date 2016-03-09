@@ -18,7 +18,11 @@ var pizza = require('./routes/pizza.js');
 var ordering = require('./routes/ordering.js');
 var venimos = require('./routes/venimos'); 
 
-mongoose.connect('mongodb://pizza:thehutt@ds023478.mlab.com:23478/pizza4all');
+mongoose.connect('mongodb://pizza:thehutt@ds023478.mlab.com:23478/pizza4all', function(err) {
+	if(err) {
+		throw err;
+	}
+});
 
 // app.get('/api/', function(req, res){
 //     res.sendfile('./views/index.html');
@@ -43,5 +47,6 @@ app.get('/wholeOrder/:splitwise_id', ordering.getWholeOrder);
 app.post('/createOrder', ordering.createOrder);
 app.post('/addToOrder', ordering.addToOrder);
 app.post('/addCollaborator', ordering.addCollaborator);
+app.post('/createIndividualOrder', ordering.createIndividualOrder);
 
 app.listen(3000);

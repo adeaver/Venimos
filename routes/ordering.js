@@ -1,3 +1,4 @@
+var mongoose = require('mongoose');
 var pizzapi = require('dominos');
 var iOrder = require('../models/individualOrderModel.js');
 var wOrder = require('../models/wholeOrderModel.js');
@@ -12,7 +13,9 @@ ordering.createOrder = function(req, res) {
 
 	var splitwiseId = req.body.splitwiseId;
 	var storeId = req.body.storeId;
-	var friendsOrders = [splitwiseId];
+	var friendsOrders = [];
+
+	friendsOrders.push(splitwiseId);
 
 	createdWOrder = new wOrder({
 		firstName:firstName,
@@ -25,30 +28,23 @@ ordering.createOrder = function(req, res) {
 		totalPrice:0
 	});
 
-	createdWOrder.save(function(err, newOrder) {
+	createdWOrder.save(function (err, newOrder) {
 		if(err) {
 			res.status(500).send('Error creating whole order');
 		}
 
-		createdIOrder = createIOrderFromWOrder(newOrder._id, newOrder.firstName, splitwiseId);
-
-		createdIOrder.save(function(err, newIOrder) {
-			if(err) {
-				res.status(500).send('Error creating individual order');
-			}
-
-			res.send(newIOrder);
-		});
+		res.send(newOrder);
 	});
 }
 
+// NEED TO IMPLEMENT
 ordering.addCollaborator = function(req, res) {
 	var wOrderId = req.body.orderId;
 	var collaboratorSplitwiseId = req.body.collaboratorSplitWiseId;
 	var collaboratorName = req.body.collaboratorName;
 
 	// Make sure you can't add a collaborator that's already added
-	wOrder.findOneAndUpdate({_id:wOrderId}, {friendsOrders:{'$push':collaboratorSplitwiseId}}, {new:true}, function(err, order) {
+	wOrder.findOneAndUpdate({_id:wOrderId}, {friendsOrders:{$push:collaboratorSplitwiseId}}, {new:true}, function (err, order) {
 		if(err) {
 			res.status(500).send('Error adding collaborator');
 		}
@@ -65,6 +61,28 @@ ordering.addCollaborator = function(req, res) {
 	});
 }
 
+ordering.createIndividualOrder = function(req, res) {
+	var splitwiseId = req.body.splitwiseId;
+	var name = req.body.name;
+	var wholeOrderId = req.body.wholeOrderId;
+
+	var createdIOrder = new iOrder({
+		splitwiseId:splitwiseId,
+		name:name,
+		wholeOrderId:wholeOrderId,
+		myOrder:[],
+		price:0
+	});
+
+	createdIOrder.save(function(err, order) {
+		if(err) {
+			res.status(500).send('Error creating new order');
+		}
+
+		res.send(order);
+	})
+}
+
 ordering.getIndividualOrder = function(req, res) {
 	var splitwiseId = req.params.splitwise_id;
 
@@ -77,10 +95,12 @@ ordering.getIndividualOrder = function(req, res) {
 	});
 }
 
+// WORKS
 ordering.getWholeOrder = function(req, res) {
-	var splitwiseId = req.params.splitwise_id;
+	var splitwiseId = [];
+	splitwiseId.push(req.params.splitwise_id);
 
-	wOrder.find({friendsOrder:{'$in':[splitwiseId]}}, function(err, order) {
+	wOrder.find({friendsOrders:{'$in':splitwiseId}}, function(err, order) {
 		if(err) {
 			res.status(500).send('Error getting whole order');
 		}
@@ -89,6 +109,7 @@ ordering.getWholeOrder = function(req, res) {
 	});
 }
 
+// Works
 ordering.addToOrder = function(req, res) {
 	var splitwiseId = req.body.splitwiseId;
 	var itemCode = req.body.itemCode;
@@ -103,7 +124,7 @@ ordering.addToOrder = function(req, res) {
 		toppings:toppings
 	};
 
-	iOrder.findOneAndUpdate({splitwiseId:splitwiseId}, {myOrder:{'$push':orderObject}}, {new:true}, function(err, order) {
+	iOrder.findOneAndUpdate({splitwiseId:splitwiseId}, {$push:{myOrder:orderObject}, $inc:{price:price*quantity}}, {new:true}, function(err, order) {
 		if(err) {
 			res.status(500).send('Error adding to order');
 		}
