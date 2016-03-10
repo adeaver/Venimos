@@ -150,6 +150,9 @@ app.controller('orderController', function ($scope, $http) {
 		}).then(function(response) {
 			// This should add something to the current order
 			$scope.individualOrder = response.data;
+			$scope.productKeyToShow = null;
+			$scope.productTypeToShow = null;
+			alert('Added to order');
 		})
 	}
 
