@@ -34,7 +34,7 @@ app.get('/getUser', venimos.getUserGET);
 app.get('/getUserFriends', venimos.getUserFriendsGET)
 app.get('/test', venimos.test); 
 app.get('/oauthCallback', venimos.apiAccess); 
-app.post('/newOrder', venimos.addNewOrderPOST);
+//app.post('/newOrder', venimos.addNewOrderPOST);
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 app.get('/individualOrder/:splitwise_id', ordering.getIndividualOrder);
