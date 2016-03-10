@@ -82,7 +82,8 @@ routes.apiAccess = function(req, res){
 					user = u; 
 					console.log("user", user);
 					isAuthenticated = true;  
-					res.redirect('/test'); 
+					// res.redirect('/test');
+					res.redirect('/order')
 				})
 				// console.log("Do you ")
 			}
@@ -93,11 +94,11 @@ routes.apiAccess = function(req, res){
 		})
 }; 
 
-routes.test = function(req, res){ 
-	console.log(path.join(__dirname, '../views', 'index2.html'))
-	res.sendFile(path.join(__dirname, '../views', 'index2.html'));
+// routes.test = function(req, res){ 
+// 	console.log(path.join(__dirname, '../views', 'index2.html'))
+// 	res.sendFile(path.join(__dirname, '../views', 'index2.html'));
 
-}; 
+// }; 
 
 routes.getUserGET = function(req, res){ 
 	if (isAuthenticated){ 
@@ -120,6 +121,15 @@ routes.getUserFriendsGET = function(req, res){
 	}
 	else{ 
 		res.redirect('/')
+	}
+}; 
+
+routes.payForBillPOST = function(req, res){
+	if ((isAuthenticated) && (splitwiseApi != null) && (splitwiseApi.isServiceOk())){ 
+		splitwiseApi.createExpense({payment: 40, cost: 20, description: "that one time"})
+	}
+	else{ 
+		res.redirect('/'); 
 	}
 }
 module.exports = routes; 

@@ -34,6 +34,8 @@ app.controller('orderController', function ($scope, $http) {
 	$scope.productKeyToShow = null;
 	$scope.productTypeToShow = null;
 
+	//total 
+	$scope.total = 0; 
 
 	// TODO ADD USER INFORMATION HERE
 	$scope.splitwiseUser = {
@@ -55,6 +57,17 @@ app.controller('orderController', function ($scope, $http) {
 		email:'teddy@POTUS.gov'
 	}];
 
+	$http.get('/getUser')
+		.then(function(user){
+			// console.log("user id", user)
+			$scope.splitwiseId = user.data.id;  
+		}) 
+
+	$http.get('/getUserFriends')
+		.then(function(friends){ 
+			// console.log("friends", friends)
+			$scope.splitwiseFriends = friends; 
+		})
 
 	$http.get('/wholeOrder/' + $scope.splitwiseUser.id)
 		.then(function(response) {
@@ -69,6 +82,7 @@ app.controller('orderController', function ($scope, $http) {
 		.then(function(response) {
 			$scope.individualOrder = response.data[0];
 		});
+
 
 	// Functions
 
@@ -212,5 +226,13 @@ app.controller('orderController', function ($scope, $http) {
 				$scope.variants = response.data.variants;
 				$scope.toppings = response.data.toppings;
 			});
+	}
+
+	$scope.payForTotal = function(){ 
+		// var total = 10,000
+		$http.post('/payForBill')
+			.then(function(response){ 
+
+			})
 	}
 });
