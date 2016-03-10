@@ -149,7 +149,7 @@ app.controller('orderController', function ($scope, $http) {
 			toppings:toppings.join(',')
 		}).then(function(response) {
 			// This should add something to the current order
-			$scope.individualOrder = response.data[0];
+			$scope.individualOrder = response.data;
 		})
 	}
 

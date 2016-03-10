@@ -99,6 +99,23 @@
 			</li>
 		</ul>
 	</div>
+
+	<div ng-if="order">
+		<h1>Your Order</h1>
+		<ul>
+			<li ng-repeat="item in $parent.individualOrder.myOrder">
+				{{$parent.variants[item.code].Name}} (x{{item.quantity}}) @ ${{item.price}} each
+				<ul>
+					<li ng-repeat="topping in item.toppings"
+						ng-if="topping !== ''">
+						{{$parent.toppings[topping].Name}}
+					</li>
+				</ul>
+			</li>
+		</ul>
+
+		Total: ${{$parent.individualOrder.price}}
+	</div>
 </body>
 
 </html>
