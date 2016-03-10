@@ -25,10 +25,11 @@ app.get('/login', venimos.login);
 app.get('/home', venimos.home);
 app.get('/store/:store_type/:address', pizza.getStores);
 app.get('/menu/:store_id', pizza.getStoreMenu);
-app.get('/idGET', venimos.getIdGET); 
+app.get('/getUser', venimos.getUserGET); 
+app.get('/getUserFriends', venimos.getUserFriendsGET)
+app.get('/test', venimos.test); 
+app.get('/oauthCallback', venimos.apiAccess); 
 app.post('/newOrder', venimos.addNewOrderPOST);
-app.get('/oauthCallback', venimos.apiAccess)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
-
 
 app.listen(3000);

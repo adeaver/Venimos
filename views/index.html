@@ -1,43 +1,38 @@
-<!DOCTYPE html>
-<html ng-app="venimos">
-  <head>
+<!-- notReallyIndex.html -->
+<!doctype html>
+
+<!-- ASSIGN OUR ANGULAR MODULE -->
+<html ng-app="venimosApp">
+<head>
+    <!-- META -->
     <meta charset="utf-8">
-    <title>Venimos</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
-    <script src="./javascripts/order.js"></script>
-  </head>
-  <body ng-controller="orderController">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Optimize mobile viewport -->
 
-	<!-- First Screen -->
-	<div ng-if="splitwiseUser === null">
-		<!-- Sign in with Splitwise -->
-		<button ng-click="$parent.authenticate()">Sign In With Splitwise</button>
-	</div>
+    <title>Venimos App</title>
 
-	<!-- Lookup Address (if user has not joined order) -->
-	<div ng-if="order === null && splitwiseUser !== null && lookupAddress === false">
-		<form>
-			<input type="text" placeholder="Street Address" ng-model="$parent.street" /><br />
-			<input type="text" placeholder="City" ng-model="$parent.city" />,
-			<input type="text" placeholder="State" ng-model="$parent.state" />
-			<input type="number" placeholder="Zipcode" ng-model="$parent.zip" /><br />
-			<button ng-click="$parent.searchAddress()">Look Up This Address</button>
-		</form>
-	</div>
+    <!-- SCROLLS -->
+    <!-- <link rel="stylesheet" type="text/css" href="stylesheets/custom.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Bitter"> -->
+    <!-- <link href="/stylesheets/simple-sidebar.css" rel="stylesheet"> -->
 
-	<!-- Choose address -->
-	<div ng-if="order === null && splitwiseUser !== null && lookupAddress === true">
-		<ul ng-repeat="store in $parent.addresses">
-			<li ng-click="$parent.chooseStore(store.StoreID)">{{store.AddressDescription}}</li>
-		</ul>
-		<button ng-click="$parent.lookupAddress = false">Go back</button>
-	</div>
+    <!-- SPELLS -->
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js">
+    </script><!-- load angular -->
+    <script type="text/javascript" src="/javascripts/auth.js"></script>
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+</head>
 
-	<!-- Menu from store -->
-	<div ng-if="order !== null">
-		{{products}}
-	</div>
-
-  </body>
+<!-- SET THE CONTROLLER -->
+<body data-spy="scroll"  ng-controller="oauthController">
+    <div id ="wrapper">
+        <div ng-hide= "pay" class = "order"> 
+            <!-- <form class ="newOrder">  -->
+                <button class = "submitButton"  ng-click = "authenticate()"> Login With Split wise In order to use our app </button>  <!-- Include this later ng-click = "pay = true" -->
+            <!-- </form> -->
+        </div>
+    </div>
+</body>
 </html>

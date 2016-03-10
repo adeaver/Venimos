@@ -9,6 +9,23 @@ var AuthApi = require('splitwise-node');
 var https = require('https');
 routes = {}; 
 var authApi = new AuthApi(oauthIds.consumerKey, oauthIds.consumerSecret);
+var path = require('path');
+var request = require('request'); 
+var secret;
+var user; 
+var isAuthenticated = false; 
+var splitwiseApi; 
+
+var saveUser = function(api, callback){
+	// console.log('saving user'); 
+	api.getCurrentUser().then(function(u){ 
+		// console.log(u)
+		return callback(u); 
+	}, function(error){ 
+		console.log(error)
+		return callback(error); 
+	}); 
+}
 
 routes.home = function(req, res){ 
 	//Input: request, response objects for get request
@@ -22,10 +39,10 @@ routes.login = function(req, res){
 	var url; 
 	var userAuthUrl = authApi.getOAuthRequestToken()
 	    .then(function(options){ 
-	    	console.log("yo"); 
-	    	// ({ oAuthToken, oAuthTokenSecret }) => {
-	        // [userOAuthToken, userOAuthTokenSecret] = [oAuthToken, oAuthTokenSecret];
+	        console.log("options", options); 
+	        secret = options.secret; 
 	        url = authApi.getUserAuthorisationUrl(options.token);
+
 	        res.send(url);  
 
 	    }, function(err){ 
@@ -33,77 +50,76 @@ routes.login = function(req, res){
 	    });
 }; 
 
-routes.addNewOrderPOST = function(req, res){ 
-	var iOrder = new oneOrder({name: req.body.name, price: req.body.price, myOrder: req.body.myOrder})
-	iOrder.save(function(err){ 
-		if(err){ 
-			console.log("There has been an error saving your order", err); 
-		}
-	})
+// routes.addNewOrderPOST = function(req, res){ 
+// 	var iOrder = new oneOrder({name: req.body.name, price: req.body.price, myOrder: req.body.myOrder})
+// 	iOrder.save(function(err){ 
+// 		if(err){ 
+// 			console.log("There has been an error saving your order", err); 
+// 		}
+// 	})
 
-	oneOrder.find({}, function(err, all){ 
-		res.send(all); 
-	})
-};
+// 	oneOrder.find({}, function(err, all){ 
+// 		res.send(all); 
+// 	})
+// };
 
-routes.authenticate= function(req, res){
-	console.log("are you in here?")
-	// console.log(oauthIds.clientId)
-	// Access-Control-Allow-Origin: http:"//connect.stripe.com/oauth/authorize?response_type=code&client_id=" + oauthIds.clientId
-	// res.redirect('http://connect.stripe.com/oauth/authorize?response_type=code&client_id=' + oauthIds.clientId);
 
-	// res.setHeader("Access-Control-Allow-Headers", "http://connect.stripe.com/oauth/authorize?response_type=code&client_id=" + oauthIds.clientId);
-	
-	// res.header("Access-Control-Allow-Origin", "*");
-	// res.header("Access-Control-Allow-Headers", "X-Requested-With"); 
-	// res.redirect('https://www.facebook.com/'); 
+routes.apiAccess = function(req, res){  
+	splitwiseApi = authApi.getSplitwiseApi(req.query.oauth_token, secret);  
+	splitwiseApi.isServiceOk().then(
 
-	// res.writeHead(301,
- //  		{Location: 'http://google.com/'}
-	// );
-	// res.end();
-	// res.writeHeader('Access-Control-Allow-Origin", "localhost:3000');
-	// Access-Control-Allow-Origin: http://localhost:3000
-	res.writeHeader("Access-Control-Allow-Origin : *"); 
-	// res.writeHead(302, {Location: "https://reddit.com/"}); 
-	// res.end(); 
-	res.redirect('https://reddit.com')
-}, 
-
-routes.getIdGET = function(req, res){ 
-	res.send("https://connect.stripe.com/oauth/authorize?response_type=code&client_id=" + oauthIds.clientId); 
+		function(merp){ 
+			console.log(splitwiseApi.oAuthToken); 
+			if(splitwiseApi.oAuthToken === undefined) {
+				res.redirect('/');
+			} 
+			else 
+			{
+				saveUser(splitwiseApi, function(u, err){ 
+					if(err){ 
+						console.log("There has been an error saving the user"); 
+					}
+					user = u; 
+					console.log("user", user);
+					isAuthenticated = true;  
+					res.redirect('/test'); 
+				})
+				// console.log("Do you ")
+			}
+		}, 
+		function(error){ 
+			console.log(error);
+			res.redirect('/'); 
+		})
 }; 
 
-routes.apiAccess = function(req, res){ 
-	var splitwiseApi = authApi.getSplitwiseApi(req.query.oauth_token, req.query.oauth_verifier);  
-	splitwiseApi.isServiceOk().then(function(merp){ 
-		if(splitwiseApi.oAuthToken === undefined) {
-			res.redirect('/');
-		} else {
-			// display ordering page
-			//console.log();
-			res.send('success');
-			//res.send('success');
-		}
-	}, function(error){ 
-		console.log(error);
+routes.test = function(req, res){ 
+	console.log(path.join(__dirname, '../views', 'index2.html'))
+	res.sendFile(path.join(__dirname, '../views', 'index2.html'));
+
+}; 
+
+routes.getUserGET = function(req, res){ 
+	if (isAuthenticated){ 
+		res.send(user); 
+	}
+	else{ 
 		res.redirect('/'); 
-	})
+	}
+}; 
+
+routes.getUserFriendsGET = function(req, res){ 
+
+	if ((isAuthenticated) && (splitwiseApi != null) && (splitwiseApi.isServiceOk())){ 
+		splitwiseApi.getFriends().then(function(friends){ 
+			console.log("friends", friends)
+
+		}, function(error){ 
+			console.log("error", error); 
+		}); 
+	}
+	else{ 
+		res.redirect('/')
+	}
 }
-
-routes.getUser = function(req, res) {
-	https.get('https://secure.splitwise.com/api/v3.0/get_current_user', function(response) {
-		var finalData = '';
-		response.setEncoding('utf-8');
-
-		response.on('data', function(data) {
-			finalData += data;
-		});
-
-		response.on('end', function() {
-			res.send(finalData);
-		});
-	});
-}
-
 module.exports = routes; 

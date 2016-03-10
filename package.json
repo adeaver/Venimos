@@ -30,6 +30,7 @@
     "express-session": "^1.13.0",
     "https": "^1.0.0",
     "mongoose": "^4.4.5",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "request": "^2.69.0"
   }
 }
