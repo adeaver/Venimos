@@ -2,6 +2,7 @@ var pizzapi = require('dominos');
 var http = require('https');
 var bl = require('bl');
 var path = require('path');
+var pizzaParser = require('./pizzaParser.js');
 
 var menuURL = "https://order.dominos.com/power/store/STORE_ID/menu?lang=en&structured=true"
 
@@ -9,6 +10,10 @@ var pizzaRoutes = {};
 
 pizzaRoutes.home = function(req, res) {
 	res.sendFile(path.join(__dirname, '../views', 'index.html'));
+}
+
+pizzaRoutes.order = function(req, res) {
+	res.sendFile(path.join(__dirname, '../views', 'order.html'));
 }
 
 pizzaRoutes.getStores = function(req, res) {
@@ -35,42 +40,14 @@ pizzaRoutes.getStoreMenu = function(req, res) {
 			var parseData = JSON.parse(finalData);
 			var sendData = {}
 
-			sendData.coupons = objectsToList(parseData.Coupons);
-			sendData.products = parseProducts(objectsToList(parseData.Products));
-			sendData.toppings = objectsToList(parseData.Toppings);
-			sendData.variants = objectsToList(parseData.Variants);
+			sendData.coupons = pizzaParser.objectsToList(parseData.Coupons);
+			sendData.products = pizzaParser.parseProducts(pizzaParser.objectsToList(parseData.Products));
+			sendData.toppings = pizzaParser.removeSuperKeys(parseData.Toppings);
+			sendData.variants = parseData.Variants;
 
 			res.json(sendData);
 		});
 	});
 };
-
-function objectsToList(data) {
-	var output = [];
-	var keyList = Object.keys(data);
-
-	for(var index = 0; index < keyList.length; index++) {
-		output.push(data[keyList[index]]);
-	}
-
-	return output;
-}
-
-function parseProducts(data) {
-	var output = {};
-
-	for(var index = 0; index < data.length; index++) {
-		var productType = data[index].ProductType;
-
-		if(productType in output) {
-			output[productType].push(data[index]);
-		} else {
-			output[productType] = [];
-			output[productType].push(data[index]);
-		}
-	}
-
-	return output
-}
 
 module.exports = pizzaRoutes;

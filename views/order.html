@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html ng-app="venimos">
+
+<head>
+	<title>Order</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="./javascripts/order.js"></script>
+</head>
+
+<body ng-controller="orderController">
+	<!-- Lookup Address (if user has not joined order) -->
+	<div ng-if="order === null && splitwiseUser !== null && lookupAddress === false">
+		<form>
+			<input type="text" placeholder="Street Address" ng-model="$parent.street" /><br />
+			<input type="text" placeholder="City" ng-model="$parent.city" />,
+			<input type="text" placeholder="State" ng-model="$parent.state" />
+			<input type="number" placeholder="Zipcode" ng-model="$parent.zip" /><br />
+			<button ng-click="$parent.searchAddress()">Look Up This Address</button>
+		</form>
+	</div>
+
+	<!-- Choose address -->
+	<div ng-if="order === null && splitwiseUser !== null && lookupAddress === true">
+		<ul ng-repeat="store in $parent.addresses">
+			<li ng-click="$parent.chooseStore(store.StoreID)">{{store.AddressDescription}}</li>
+		</ul>
+		<button ng-click="$parent.lookupAddress = false">Go back</button>
+	</div>
+
+	<!-- Menu from store -->
+	<div ng-if="order !== null">
+		<h1>Coupons</h1>
+		<ul ng-repeat="coupon in $parent.coupons">
+			<li ng-if="coupon.Tags.Days === undefined || $parent.couponAvailable(coupon.Tags.Days)" ng-click="$parent.selectCoupon(coupon.Code)">
+				{{coupon.Name}}<span ng-if="coupon.Price != ''"> (${{coupon.Price}})
+			</li>
+		</ul>
+
+		<h1>Products</h1>
+		<div ng-repeat="productKey in $parent.productKeys">
+			<h2 ng-click="$parent.showProductKey(productKey)">{{productKey}}</h2>
+			<ul>
+				<li ng-if="$parent.productKeyToShow === productKey" 
+					ng-repeat="product in $parent.products[productKey]"
+					ng-click="$parent.showProductTypes(product.Code)">
+					{{product.Name}}<br />-- {{product.Description}}
+
+					<div ng-if="$parent.productTypeToShow == product.Code">
+						<h3>Types:</h3>
+						<ul>
+							<label ng-repeat="variant in product.Variants">
+								<input class="orderRadio" type="radio" 
+								value="{{$parent.variants[variant].Code}}"
+								name="{{$parent.variants[variant].Name}}" />
+								{{$parent.variants[variant].Name}} -- ${{$parent.variants[variant].Price}} --
+
+								<input type="hidden" id="price_{{$parent.variants[variant].Code}}"
+								value="{{$parent.variants[variant].Price}}" />
+
+								Quantity: <input type="number" min="1" max="10"
+								value="1" name="qty_{{$parent.variants[variant].Code}}" 
+								id="qty_{{$parent.variants[variant].Code}}" /><br />
+							</label>
+						</ul>
+
+						<h3 ng-if="product.AvailableToppings.length > 0">Toppings:</h3>
+						<ul>
+							<label ng-repeat="topping in product.AvailableToppings">
+								<input ng-if="$parent.checkIsDefault(product.DefaultToppings, topping.name)" type="checkbox" 
+								class="toppingCheckbox" value="{{topping.name}}" name="{{topping.name}}" checked/>
+
+								<input ng-if="!$parent.checkIsDefault(product.DefaultToppings, topping.name)" type="checkbox" 
+								class="toppingCheckbox" value="{{topping.name}}" name="{{topping.name}}" />
+
+								{{$parent.toppings[topping.name].Name}}<br />
+							</label>
+						</ul>
+
+						<button ng-click="$parent.addToOrder()">
+							Add to Order
+						</button>
+
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div ng-if="order !== null && isOrderOwner">
+		<h1>Friends</h1>
+		<ul>
+			<li ng-repeat="friend in $parent.splitwiseFriends"
+				ng-if="!$parent.isAlreadyCollaborator(friend.id)"
+				ng-click="$parent.addCollaborator(friend.firstName, friend.lastName, friend.id)">
+				{{friend.firstName}} {{friend.lastName}}
+			</li>
+		</ul>
+	</div>
+
+	<div ng-if="order">
+		<h1>Your Order</h1>
+		<ul>
+			<li ng-repeat="item in $parent.individualOrder.myOrder">
+				{{$parent.variants[item.code].Name}} (x{{item.quantity}}) @ ${{item.price}} each
+				<ul>
+					<li ng-repeat="topping in item.toppings"
+						ng-if="topping !== ''">
+						{{$parent.toppings[topping].Name}}
+					</li>
+				</ul>
+			</li>
+		</ul>
+
+		Total: ${{$parent.individualOrder.price}}
+	</div>
+</body>
+
+</html>
