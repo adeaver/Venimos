@@ -33,7 +33,7 @@ ordering.createOrder = function(req, res) {
 		if(err) {
 			res.status(500).send('Error creating whole order');
 		} else {
-			res.send(order);
+			res.json(order);
 		}
 	});
 }
@@ -49,7 +49,7 @@ ordering.addCollaborator = function(req, res) {
 			res.status(500).send('Error adding collaborator');
 		}
 
-		res.send(order)
+		res.json(order)
 	});
 }
 
@@ -62,7 +62,7 @@ ordering.removeCollaborator = function(req, res) {
 			res.status(500).send('Error removing collaborator');
 		}
 
-		res.send(order);
+		return res.json(order);
 	});
 }
 
@@ -85,14 +85,14 @@ ordering.createIndividualOrder = function(req, res) {
 			res.status(500).send('Error creating new order');
 		}
 
-		res.send(order);
+		res.json(order);
 	})
 }
 
 ordering.removeIndividualOrder = function(req, res) {
 	var splitwiseId = req.body.splitwiseId;
 
-	iOrder.remove({_id:splitwiseId}, function(err) {
+	iOrder.remove({splitwiseId:splitwiseId}, function(err) {
 		if(err) {
 			res.status(500).send('Error removing order');
 		}
@@ -110,7 +110,7 @@ ordering.getIndividualOrder = function(req, res) {
 			res.send(500);
 		}
 
-		res.send(order);
+		res.json(order);
 	});
 }
 
@@ -124,7 +124,7 @@ ordering.getWholeOrder = function(req, res) {
 			res.status(500).send('Error getting whole order');
 		}
 
-		res.send(order);
+		res.json(order);
 	});
 }
 
@@ -148,7 +148,7 @@ ordering.addToOrder = function(req, res) {
 			res.status(500).send('Error adding to order');
 		}
 
-		res.send(order);
+		res.json(order);
 
 	})
 }
