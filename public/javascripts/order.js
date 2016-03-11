@@ -9,10 +9,6 @@ app.controller('orderController', function ($scope, $http, $document) {
 
 	$scope.addresses = [];
 
-	$scope.dateNum = new Date().getDay();
-	$scope.dates = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-	$scope.date = $scope.dates[$scope.dateNum];
-
 	// Store information keys
 
 	$scope.coupons = null;
