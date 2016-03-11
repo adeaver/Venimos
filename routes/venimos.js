@@ -126,12 +126,10 @@ routes.getUserFriendsGET = function(req, res){
 routes.payForBillPOST = function(req, res){
 	// console.log(splitwiseApi.isServiceOk())
 	console.log("PAYING for this backend"); 
-	console.log("REq.Body", req); 
 
-	// oneOrder.find({wholeOrderid: req.body.id}, function(err, pizzaOrders){ 
-	// 	console.log("Pizza Orders from mongo", pizzaOrders); 
-
-	// })
+	oneOrder.find({wholeOrderId: '56e258a1702ab7063f714961'}, function(err, pizzaOrders){ 
+		console.log("Pizza Orders from mongo", pizzaOrders); 
+	})
 
 }; 
 
