@@ -317,7 +317,7 @@ app.controller('orderController', function ($scope, $http) {
 
 	$scope.payForTotal = function(){ 
 		console.log("paying")
-		$http.post('/payForBill', $scope.orderId)
+		$http.post('/payForBill', {wholeOrderId : $scope.orderId})
 			.then(function(response){ 
 
 			})

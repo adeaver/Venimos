@@ -1,0 +1,37 @@
+<!doctype html>
+
+<!-- ASSIGN OUR ANGULAR MODULE -->
+<html ng-app="venimosApp">
+<head>
+    <!-- META -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Optimize mobile viewport -->
+
+    <title>Venimos App</title>
+
+    <!-- SCROLLS -->
+    <!-- <link rel="stylesheet" type="text/css" href="stylesheets/custom.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Bitter"> -->
+    <!-- <link href="/stylesheets/simple-sidebar.css" rel="stylesheet"> -->
+
+    <!-- SPELLS -->
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js">
+    </script><!-- load angular -->
+    <script type="text/javascript" src="/javascripts/auth.js"></script>
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+</head>
+
+<!-- SET THE CONTROLLER -->
+<body data-spy="scroll"  ng-controller="oauthController">
+    <div id ="wrapper">
+        <div ng-hide= "pay" class = "order"> 
+            <!-- <form class ="newOrder">  -->
+                <button class = "verifyButton"> Please verify yourself </button>  <!-- Include this later ng-click = "pay = true" -->
+            <!-- </form> -->
+        </div>
+    </div>
+</body>
+</html>
