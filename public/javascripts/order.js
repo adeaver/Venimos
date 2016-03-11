@@ -216,6 +216,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 			$scope.order = response.data;
 
 			$scope.getSeparateCollaboratorsFromFriends();
+			$scope.removeUserFromGroup(id);
 		});
 	}
 
