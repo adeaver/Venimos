@@ -204,6 +204,9 @@ ordering.finalizeOrder = function(req, res) {
 
 					dominosOrder.validate(function (result) {
 						if(result.success) {
+							// THIS FUNCTION WOULD PAY FOR THE ORDER IF SUPPLIED CREDIT CARD INFORMATION
+							// WE CHOSE NOT TO IMPLEMENT THIS PART
+							
 							dominosOrder.place(function (placeResult) {
 								if(placeResult.success) {
 									wOrder.remove({_id:wholeOrderId}, function(err) {
