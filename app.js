@@ -43,6 +43,8 @@ app.get('/wholeOrder/:splitwise_id', ordering.getWholeOrder);
 app.post('/createOrder', ordering.createOrder);
 app.post('/addToOrder', ordering.addToOrder);
 app.post('/addCollaborator', ordering.addCollaborator);
+app.post('/removeCollaborator', ordering.removeCollaborator);
 app.post('/createIndividualOrder', ordering.createIndividualOrder);
+app.post('/removeIndividualOrder', ordering.removeIndividualOrder);
 
 app.listen(3000);

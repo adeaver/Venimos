@@ -17,7 +17,7 @@ ordering.createOrder = function(req, res) {
 
 	friendsOrders.push(splitwiseId);
 
-	createdWOrder = new wOrder({
+	createdWOrder = {
 		firstName:firstName,
 		lastName:lastName,
 		email:email,
@@ -26,30 +26,43 @@ ordering.createOrder = function(req, res) {
 		storeId:storeId,
 		friendsOrders:friendsOrders,
 		totalPrice:0
-	});
+	};
 
-	createdWOrder.save(function (err, newOrder) {
+	// This should update
+	wOrder.findOneAndUpdate({splitwiseId:splitwiseId}, {$set:createdWOrder}, {upsert:true, new:true}, function (err, order) {
 		if(err) {
 			res.status(500).send('Error creating whole order');
+		} else {
+			res.send(order);
 		}
-
-		res.send(newOrder);
 	});
 }
 
-// NEED TO IMPLEMENT
+// WORKS
 ordering.addCollaborator = function(req, res) {
 	var wOrderId = req.body.orderId;
 	var collaboratorSplitwiseId = req.body.collaboratorSplitwiseId;
 	var collaboratorName = req.body.collaboratorName;
 
-	// Make sure you can't add a collaborator that's already added
 	wOrder.findOneAndUpdate({_id:wOrderId}, {$push:{friendsOrders:collaboratorSplitwiseId}}, {new:true}, function (err, order) {
 		if(err) {
 			res.status(500).send('Error adding collaborator');
 		}
 
 		res.send(order)
+	});
+}
+
+ordering.removeCollaborator = function(req, res) {
+	var wOrderId = req.body.orderId;
+	var collaboratorSplitwiseId = req.body.collaboratorSplitwiseId;
+
+	wOrder.findOneAndUpdate({_id:wOrderId}, {$pull:{friendsOrders:{$in:[collaboratorSplitwiseId]}}}, {new:true}, function (err, order) {
+		if(err) {
+			res.status(500).send('Error removing collaborator');
+		}
+
+		res.send(order);
 	});
 }
 
@@ -74,6 +87,18 @@ ordering.createIndividualOrder = function(req, res) {
 
 		res.send(order);
 	})
+}
+
+ordering.removeIndividualOrder = function(req, res) {
+	var splitwiseId = req.body.splitwiseId;
+
+	iOrder.remove({_id:splitwiseId}, function(err) {
+		if(err) {
+			res.status(500).send('Error removing order');
+		}
+
+		res.send('Successfully removed order');
+	});
 }
 
 // works

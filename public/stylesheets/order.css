@@ -20,15 +20,32 @@
 	margin:auto;
 }
 
-#first_tab {
-	display:flex;
-	flex-direction:row;
-}
-
 #first_tab_productkeys {
-	flex:1;
+	width:20%;
+	float:left;
 }
 
 #first_tab_product_display {
-	flex:3;
+	width:80%;
+	float:right;
+}
+
+.entry:hover {
+	background:#18bc9c;
+}
+
+.entry_button {
+	float:right;
+}
+
+#collaborators {
+	width:50%;
+	float:left;
+	text-align:center;
+}
+
+#friendsToAdd {
+	width:50%;
+	float:right;
+	text-align: center;
 }

@@ -70,78 +70,89 @@
 					</div>
 
 					<div id="first_tab_product_display">
-						&nbsp;
-						<ul>
-							<li ng-repeat="product in $parent.products[$parent.productKeyToShow]"
-								ng-click="$parent.showProductTypes(product.Code)">
-								
-								{{product.Name}}<br />-- {{product.Description}}
+						<h2 ng-if="$parent.productKeyToShow === null">
+							Click on a menu category to view the selections
+						</h2>
 
-								<div ng-if="$parent.productTypeToShow == product.Code">
-									<h3>Types:</h3>
-									<ul>
-										<label ng-repeat="variant in product.Variants">
-											<input class="orderRadio" type="radio" 
-											value="{{$parent.variants[variant].Code}}"
-											name="{{$parent.variants[variant].Name}}" />
-											{{$parent.variants[variant].Name}} -- ${{$parent.variants[variant].Price}} --
+						<div class="entry" id="product_entry_{{product.Code}}" 
+							ng-repeat="product in $parent.products[$parent.productKeyToShow]"
+							ng-click="$parent.showProductTypes(product.Code)">
+							
+							<h3 class="entry_text">{{product.Name}}</h3>
+							<h6 class="entry_text">{{product.Description}}</h6>
 
-											<input type="hidden" id="price_{{$parent.variants[variant].Code}}"
-											value="{{$parent.variants[variant].Price}}" />
+							<div ng-if="$parent.productTypeToShow == product.Code">
+								<h3>Types:</h3>
+								<div ng-repeat="variant in product.Variants">
+									<label>
+										<input class="orderRadio" type="radio" 
+										value="{{$parent.variants[variant].Code}}"
+										name="{{$parent.variants[variant].Name}}" />
+										{{$parent.variants[variant].Name}} -- ${{$parent.variants[variant].Price}} --
 
-											Quantity: <input type="number" min="1" max="10"
-											value="1" name="qty_{{$parent.variants[variant].Code}}" 
-											id="qty_{{$parent.variants[variant].Code}}" /><br />
-										</label>
-									</ul>
+										<input type="hidden" id="price_{{$parent.variants[variant].Code}}"
+										value="{{$parent.variants[variant].Price}}" />
 
-									<h3 ng-if="product.AvailableToppings.length > 0">Toppings:</h3>
-									<ul>
-										<label ng-repeat="topping in product.AvailableToppings">
-											<input ng-if="$parent.checkIsDefault(product.DefaultToppings, topping.name)" type="checkbox" 
-											class="toppingCheckbox" value="{{topping.name}}" name="{{topping.name}}" checked/>
-
-											<input ng-if="!$parent.checkIsDefault(product.DefaultToppings, topping.name)" type="checkbox" 
-											class="toppingCheckbox" value="{{topping.name}}" name="{{topping.name}}" />
-
-											{{$parent.toppings[topping.name].Name}}<br />
-										</label>
-									</ul>
-
-									<button ng-click="$parent.addToOrder()">
-										Add to Order
-									</button>
-
+										Quantity: <input type="number" min="1" max="10"
+										value="1" name="qty_{{$parent.variants[variant].Code}}" 
+										id="qty_{{$parent.variants[variant].Code}}" />
+									</label><br />
 								</div>
-							</li>
-						</ul>
+
+								<h3 ng-if="product.AvailableToppings.length > 0">Toppings:</h3>
+								<div ng-repeat="topping in product.AvailableToppings">
+									<label>
+										<input ng-if="$parent.checkIsDefault(product.DefaultToppings, topping.name)" type="checkbox" 
+										class="toppingCheckbox" value="{{topping.name}}" name="{{topping.name}}" checked/>
+
+										<input ng-if="!$parent.checkIsDefault(product.DefaultToppings, topping.name)" type="checkbox" 
+										class="toppingCheckbox" value="{{topping.name}}" name="{{topping.name}}" />
+
+										{{$parent.toppings[topping.name].Name}}
+									</label><br />
+								</div>
+
+								<button class="btn entry_button" ng-click="$parent.addToOrder()">
+									Add to Order
+								</button>
+
+							</div>
+						</li>
+
 					</div>
 				</md-tab>
 
 				<md-tab label="Your Order" id="order_tab">
-					<ul>
-						<li ng-repeat="item in $parent.individualOrder.myOrder">
-							{{$parent.variants[item.code].Name}} (x{{item.quantity}}) @ ${{item.price}} each
-							<ul>
-								<li ng-repeat="topping in item.toppings"
-									ng-if="topping !== ''">
-									{{$parent.toppings[topping].Name}}
-								</li>
-							</ul>
-						</li>
-					</ul>
+					<div class="entry" ng-repeat="item in $parent.individualOrder.myOrder">
+						<h3>{{$parent.variants[item.code].Name}} (x{{item.quantity}}) @ ${{item.price}} each</h3>
+						<ul>
+							<li ng-repeat="topping in item.toppings"
+								ng-if="topping !== ''">
+								{{$parent.toppings[topping].Name}}
+							</li>
+						</ul>
+					</div>
 
-					Total: ${{$parent.individualOrder.price}}
+					<h3>Total: ${{$parent.individualOrder.price}}</h3>
 				</md-tab>
 
 				<md-tab ng-if="isOrderOwner" label="Friends">
-					<ul>
-						<li ng-repeat="friend in $parent.splitwiseFriends"
-							ng-if="!$parent.isAlreadyCollaborator(friend.id)"
+					<div id="collaborators">
+						<h3>Collaborators On This Order</h3>
+						<div class="entry" ng-repeat="friend in $parent.collaborators"
+							ng-click="$parent.removeCollaborator(friend.id)">
+							<h5>{{friend.firstName}} {{friend.lastName}}</h5>
+						</div>					
+					</div>
+
+					<div id="friendsToAdd">
+						<h3>Splitwise Friends You Can Add</h3>
+						<div class="entry" ng-repeat="friend in $parent.friendsNotAdded"
 							ng-click="$parent.addCollaborator(friend.firstName, friend.lastName, friend.id)">
-							{{friend.firstName}} {{friend.lastName}}
-						</li>
-					</ul>
+							<h5>{{friend.firstName}} {{friend.lastName}}</h5>
+						</div>
+					</div>
+
 				</md-tab>
 			</md-tabs>
 		</md-content>

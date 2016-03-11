@@ -1,6 +1,6 @@
 var app = angular.module('venimos', ['ngMaterial']);
 
-app.controller('orderController', function ($scope, $http) {
+app.controller('orderController', function ($scope, $http, $document) {
 	$scope.order = null;
 	$scope.individualOrder = null;
 	$scope.lookupAddress = false;
@@ -55,13 +55,17 @@ app.controller('orderController', function ($scope, $http) {
 		email:'teddy@POTUS.gov'
 	}];
 
+	$scope.collaborators = [];
+	$scope.friendsNotAdded = [];
 
 	$http.get('/wholeOrder/' + $scope.splitwiseUser.id)
 		.then(function(response) {
+			console.log(response);
 			if(response.data.length > 0) {
 				$scope.order = response.data[0];
 				$scope.isOrderOwner = $scope.order.splitwiseId == $scope.splitwiseUser.id;
 				$scope.getMenu($scope.order.storeId);
+				$scope.getSeparateCollaboratorsFromFriends();
 			}
 		});
 
@@ -103,18 +107,18 @@ app.controller('orderController', function ($scope, $http) {
 			$scope.order = response.data;
 			$scope.isOrderOwner = true;
 
+			$scope.getSeparateCollaboratorsFromFriends();
+
 			$http.post('/createIndividualOrder', {
 				splitwiseId:$scope.splitwiseUser.id,
 				wholeOrderId:$scope.order._id,
 				name:$scope.splitwiseUser.firstName + " " + $scope.splitwiseUser.lastName
+			}).then(function(response) {
+				$scope.individualOrder = response.data;
 			});
 		});
 		
 		$scope.getMenu(id);
-	}
-
-	$scope.selectCoupon = function(code) {
-		alert(code);
 	}
 
 	$scope.addToOrder = function() {
@@ -150,7 +154,8 @@ app.controller('orderController', function ($scope, $http) {
 		}).then(function(response) {
 			// This should add something to the current order
 			$scope.individualOrder = response.data;
-		})
+			alert('Added to order');
+		});
 	}
 
 	$scope.addCollaborator = function(first, last, id) {
@@ -160,13 +165,30 @@ app.controller('orderController', function ($scope, $http) {
 			collaboratorName:name,
 			collaboratorSplitwiseId:id,
 			orderId:$scope.order._id
-		}).then(function(response) {
+		}).then(function (response) {
 			$scope.order = response.data;
+
+			$scope.getSeparateCollaboratorsFromFriends();
 
 			$http.post('/createIndividualOrder', {
 				name:name,
 				splitwiseId:id,
 				wholeOrderId:$scope.order._id
+			});
+		});
+	}
+
+	$scope.removeCollaborator = function(id) {
+		$http.post('/removeCollaborator', {
+			orderId:$scope.order._id,
+			collaboratorSplitwiseId:id
+		}).then(function (response) {
+			$scope.order = response.data;
+
+			$scope.getSeparateCollaboratorsFromFriends();
+
+			$http.post('/removeIndividualOrder', {
+				splitwiseId:id
 			});
 		});
 	}
@@ -182,10 +204,6 @@ app.controller('orderController', function ($scope, $http) {
 		return defaultToppings.indexOf(topping) != -1 || false;
 	}
 
-	$scope.isAlreadyCollaborator = function(id) {
-		return $scope.order.friendsOrders.indexOf(id) != -1 || false;
-	}
-
 	// Display Functions
 	$scope.showProductKey = function(key) {
 		$scope.productKeyToShow = key;
@@ -194,7 +212,17 @@ app.controller('orderController', function ($scope, $http) {
 	}
 
 	$scope.showProductTypes = function(key) {
+		if($scope.productTypeToShow !== null) {
+			// Readd background light up functionality
+			var element = angular.element($document[0].querySelector('#product_entry_' + $scope.productTypeToShow));
+			element.addClass('entry');
+		}
 		$scope.productTypeToShow = key;
+
+		// remove background light up functionality
+		var newElement = angular.element($document[0].querySelector('#product_entry_' + key));
+		newElement.removeClass('entry');
+
 		$scope.toppingsToShow = null;
 	}
 
@@ -212,5 +240,18 @@ app.controller('orderController', function ($scope, $http) {
 				$scope.variants = response.data.variants;
 				$scope.toppings = response.data.toppings;
 			});
+	}
+
+	$scope.getSeparateCollaboratorsFromFriends = function() {
+		$scope.collaborators = [];
+		$scope.friendsNotAdded = [];
+
+		for(var index = 0; index < $scope.splitwiseFriends.length; index++) {
+			if($scope.order.friendsOrders.indexOf($scope.splitwiseFriends[index].id) != -1) {
+				$scope.collaborators.push($scope.splitwiseFriends[index]);
+			} else {
+				$scope.friendsNotAdded.push($scope.splitwiseFriends[index]);
+			}
+		}
 	}
 });
