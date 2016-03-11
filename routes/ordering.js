@@ -167,10 +167,11 @@ ordering.finalizeOrder = function(req, res) {
 					for(var index = 0; index < iOrders.length; index++) {
 						var myOrder = iOrders[index].myOrder;
 						for(var itemIndex = 0; itemIndex < myOrder.length; itemIndex++) {
-							var item = myOrder[index];
+							var item = myOrder[itemIndex];
 
 							dominosOrder.addItem(new pizzapi.Item(
 								{
+								code:item.code,
 								quantity:item.quantity,
 								options:item.toppings
 								})

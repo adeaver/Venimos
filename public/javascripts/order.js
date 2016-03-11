@@ -286,13 +286,38 @@ app.controller('orderController', function ($scope, $http, $document) {
 			.then(function(response) {
 				if(response.data.message !== undefined && response.data.message === 'success!') {
 					alert('Thank you for placing your order');
-					window.location.href = '/';
+					resetVariables();
 				}
 			})
 		// $http.post('/payForBill', {orderId : $scope.order._id})
 		// 	.then(function(response){ 
 
 		// 	})
+	}
+
+	var resetVariables = function() {
+		$scope.order = null;
+		$scope.individualOrder = null;
+		$scope.lookupAddress = false;
+		$scope.isOrderOwner = false;
+		$scope.groupId = null; 
+
+		$scope.addresses = [];
+
+		// Store information keys
+
+		$scope.coupons = null;
+		$scope.products = null;
+		$scope.productKeys = null;
+		$scope.variants = null;
+		$scope.toppings = null;
+
+		// display variables
+		$scope.productKeyToShow = null;
+		$scope.productTypeToShow = null;
+
+		//total 
+		$scope.total = 0; 
 	}
 
 });
