@@ -5,7 +5,7 @@ app.controller('orderController', function ($scope, $http) {
 	$scope.individualOrder = null;
 	$scope.lookupAddress = false;
 	$scope.isOrderOwner = false;
-	$scope.orderId = null; 
+	$scope.groupId = null; 
 
 	$scope.addresses = [];
 
@@ -48,32 +48,32 @@ app.controller('orderController', function ($scope, $http) {
 	// 	email:'imreallyfat@POTUS.gov'
 	// };
 
-	var you = { id: 3000007,
-  first_name: 'FATTY',
-  last_name: 'JUST KIDDING',
-  picture: 
-   { small: 'https://dx0qysuen8cbs.cloudfront.net/assets/fat_rabbit/avatars/50-a1e7c78c96b64b48f8ffd189d623c58b.png',
-     medium: 'https://dx0qysuen8cbs.cloudfront.net/assets/fat_rabbit/avatars/100-17010fc5ad055cc69769b9209f95f2c1.png',
-     large: 'https://dx0qysuen8cbs.cloudfront.net/assets/fat_rabbit/avatars/200-4a03472750dda254b5e7a8e1726bb5d3.png' },
-  email: 'alvarado.casey@gmail.com',
-  registration_status: 'confirmed',
-  force_refresh_at: null,
-  locale: null,
-  country_code: 'US',
-  date_format: 'MM/DD/YYYY',
-  default_currency: 'USD',
-  default_group_id: -1,
-  notifications_read: '2012-07-17T23:54:29Z',
-  notifications_count: 0,
-  notifications: 
-   { added_as_friend: true,
-     added_to_group: true,
-     expense_added: false,
-     expense_updated: false,
-     bills: true,
-     payments: true,
-     monthly_summary: true,
-     announcements: true } }
+	// var you = { id: 3000007,
+ //  first_name: 'FATTY',
+ //  last_name: 'JUST KIDDING',
+ //  picture: 
+ //   { small: 'https://dx0qysuen8cbs.cloudfront.net/assets/fat_rabbit/avatars/50-a1e7c78c96b64b48f8ffd189d623c58b.png',
+ //     medium: 'https://dx0qysuen8cbs.cloudfront.net/assets/fat_rabbit/avatars/100-17010fc5ad055cc69769b9209f95f2c1.png',
+ //     large: 'https://dx0qysuen8cbs.cloudfront.net/assets/fat_rabbit/avatars/200-4a03472750dda254b5e7a8e1726bb5d3.png' },
+ //  email: 'alvarado.casey@gmail.com',
+ //  registration_status: 'confirmed',
+ //  force_refresh_at: null,
+ //  locale: null,
+ //  country_code: 'US',
+ //  date_format: 'MM/DD/YYYY',
+ //  default_currency: 'USD',
+ //  default_group_id: -1,
+ //  notifications_read: '2012-07-17T23:54:29Z',
+ //  notifications_count: 0,
+ //  notifications: 
+ //   { added_as_friend: true,
+ //     added_to_group: true,
+ //     expense_added: false,
+ //     expense_updated: false,
+ //     bills: true,
+ //     payments: true,
+ //     monthly_summary: true,
+ //     announcements: true } }
 
 	// $scope.splitwiseFriends = [{
 	// 	id:'12345',
@@ -92,15 +92,15 @@ app.controller('orderController', function ($scope, $http) {
 		$http.post('/createGroup', user)
 			.then(function(group){ 
 				console.log("group", group); 
-				$scope.orderId = group.data.id; 
-				console.log("scope.orderId", $scope.orderId)
+				$scope.groupId = group.data.id; 
+				console.log("scope.groupId", $scope.groupId)
 // 
 			})
 	}
 
 	var addToExistingGroup = function(newUser, orderId){ 
 		console.log("in add to existing group")
-		$http.post('/addToExistingGroup', {newCollaborator : newUser, orderId : $scope.orderId})
+		$http.post('/addToExistingGroup', {newCollaborator : newUser, groupId : $scope.groupId})
 			.then(function(something){ 
 				console.log("group", something); 
 			})
@@ -109,7 +109,7 @@ app.controller('orderController', function ($scope, $http) {
 
 	var getExistingOrder = function(groupId){
 		console.log("IN get exisiting order")
-		$http.get('/getExistingGroup', {groupId : $scope.orderId})
+		$http.get('/getExistingGroup', {groupId : $scope.groupId})
 			.then(function(something){ 
 				console.log("group", something); 
 			})
@@ -317,7 +317,8 @@ app.controller('orderController', function ($scope, $http) {
 
 	$scope.payForTotal = function(){ 
 		console.log("paying")
-		$http.post('/payForBill', {wholeOrderId : $scope.orderId})
+		console.log("order id", $scope.order._id)
+		$http.post('/payForBill', {orderId : $scope.order._id})
 			.then(function(response){ 
 
 			})

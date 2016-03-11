@@ -126,11 +126,10 @@ routes.getUserFriendsGET = function(req, res){
 routes.payForBillPOST = function(req, res){
 	// console.log(splitwiseApi.isServiceOk())
 	console.log("PAYING for this backend"); 
-
-	oneOrder.find({wholeOrderId: '56e258a1702ab7063f714961'}, function(err, pizzaOrders){ 
+	console.log(req.body); 
+	oneOrder.find({wholeOrderId : req.body.orderId}, function(err, pizzaOrders){ 
 		console.log("Pizza Orders from mongo", pizzaOrders); 
-	})
-
+	}); 
 }; 
 
 routes.createGroupPOST = function(req, res){ 
@@ -152,12 +151,12 @@ routes.createGroupPOST = function(req, res){
 routes.addToExistingGroupPOST = function(req, res){ 
 	console.log(req.body); 
 	var newUser = req.body.newCollaborator; 
-	var existingOrderId = req.body.orderId; 
+	var existingGroupId = req.body.groupId; 
 	console.log('REQ.BODY', req.body); 
-	console.log('existing ORDER ID', existingOrderId); 
-	console.log("in add to existingOrderId", newUser, existingOrderId)
+	console.log('existing ORDER ID', existingGroupId); 
+	console.log("in add to existingOrderId", newUser, existingGroupId)
 	if ((isAuthenticated) && (splitwiseApi != null) && (splitwiseApi.isServiceOk())){ 
-		splitwiseApi.addUserToGroup(existingOrderId, newUser)
+		splitwiseApi.addUserToGroup(existingGroupId, newUser)
 			.then(function(group){ 
 				console.log("added to existing group HERE", group); 
 				res.send(200); 
