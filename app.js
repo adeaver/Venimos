@@ -43,6 +43,8 @@ app.get('/getOrdersForUser/:splitwise_id', ordering.getOrdersForUser);
 app.post('/createGroup', venimos.createGroupPOST); 
 app.post('/createOrder', ordering.createOrder);
 app.post('/addToOrder', ordering.addToOrder);
+app.delete('/removeFromOrder/:splitwise_id/:item_id/:price', ordering.removeFromOrder);
+
 app.post('/addCollaborator', ordering.addCollaborator);
 app.post('/removeCollaborator', ordering.removeCollaborator);
 app.post('/finalizeOrder', ordering.finalizeOrder);

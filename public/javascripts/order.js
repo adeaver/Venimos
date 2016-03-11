@@ -184,6 +184,14 @@ app.controller('orderController', function ($scope, $http, $document) {
 		});
 	}
 
+	$scope.removeFromOrder = function(id, price) {
+		$http.delete('/removeFromOrder/' + $scope.splitwiseUser.id + '/' + id + '/' + price)
+			.then(function(response) {
+				console.log(response);
+				$scope.individualOrder = response.data;
+			});
+	}
+
 	$scope.addCollaborator = function(first, last, id) {
 		// Should check to make sure that someone doesn't already have an order open
 		var name = first + " " + last;

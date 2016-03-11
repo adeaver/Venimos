@@ -124,7 +124,8 @@
 				</md-tab>
 
 				<md-tab label="Your Order" id="order_tab">
-					<div class="entry" ng-repeat="item in $parent.individualOrder.myOrder">
+					<div class="entry" ng-repeat="item in $parent.individualOrder.myOrder"
+							ng-click="$parent.removeFromOrder(item.itemId, item.price)">
 						<h3>{{$parent.variants[item.code].Name}} (x{{item.quantity}}) @ ${{item.price}} each</h3>
 						<ul>
 							<li ng-repeat="topping in item.toppings"

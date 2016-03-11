@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var pizzapi = require('dominos');
+var hasher = require('crypto');
 var iOrder = require('../models/individualOrderModel.js');
 var wOrder = require('../models/wholeOrderModel.js');
 
@@ -127,7 +128,14 @@ ordering.addToOrder = function(req, res) {
 	var quantity = req.body.quantity;
 	var toppings = req.body.toppings.split(',');
 
+	var date = new Date();
+
+	var itemId = hasher.createHmac('sha256', 'someSecret')
+						.update(itemCode + req.body.toppings + String(date.getTime()))
+						.digest('hex');
+
 	var orderObject = {
+		itemId:itemId,
 		code:itemCode,
 		price:price,
 		quantity:quantity,
@@ -142,6 +150,22 @@ ordering.addToOrder = function(req, res) {
 		res.json(order);
 
 	})
+}
+
+ordering.removeFromOrder = function(req, res) {
+	var splitwiseId = req.params.splitwise_id;
+	var itemId = req.params.item_id;
+	var price = parseFloat(req.params.price);
+
+	iOrder.findOneAndUpdate({splitwiseId:splitwiseId}, {$pull:{myOrder:{itemId:itemId}}, $inc:{price:-1*price}}, {new:true}, function (err, order) {
+		console.log(err);
+		if(!err) {
+			res.json(order);
+		} else {
+			res.status(500).json({'message':'error removing item from order'});
+		}
+	});
+	
 }
 
 ordering.finalizeOrder = function(req, res) {
