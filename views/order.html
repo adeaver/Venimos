@@ -87,7 +87,8 @@
 									<label>
 										<input class="orderRadio" type="radio" 
 										value="{{$parent.variants[variant].Code}}"
-										name="{{$parent.variants[variant].Name}}" />
+										name="{{$parent.variants[variant].Name}}"
+										ng-click="$parent.uncheck($parent.variants[variant].Name)" />
 										{{$parent.variants[variant].Name}} -- ${{$parent.variants[variant].Price}} --
 
 										<input type="hidden" id="price_{{$parent.variants[variant].Code}}"

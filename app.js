@@ -47,6 +47,7 @@ app.post('/addCollaborator', ordering.addCollaborator);
 app.post('/removeCollaborator', ordering.removeCollaborator);
 app.post('/createIndividualOrder', ordering.createIndividualOrder);
 app.post('/removeIndividualOrder', ordering.removeIndividualOrder);
+app.post('/finalizeOrder', ordering.finalizeOrder);
 app.post('/payForBill', venimos.payForBillPOST); 
 app.post('/addToExistingGroup', venimos.addToExistingGroupPOST); 
 

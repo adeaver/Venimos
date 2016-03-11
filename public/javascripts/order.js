@@ -289,6 +289,16 @@ app.controller('orderController', function ($scope, $http, $document) {
 		return defaultToppings.indexOf(topping) != -1 || false;
 	}
 
+	$scope.uncheck = function(name) {
+		var orderRadio = document.getElementsByClassName('orderRadio');
+
+		for(var index = 0; index < orderRadio.length; index++) {
+			if(orderRadio[index].name != name) {
+				orderRadio[index].checked = false;
+			}
+		}
+	}
+
 	// Display Functions
 	$scope.showProductKey = function(key) {
 		$scope.productKeyToShow = key;
@@ -352,10 +362,18 @@ app.controller('orderController', function ($scope, $http, $document) {
 	$scope.payForTotal = function(){ 
 		console.log("paying")
 		console.log("order id", $scope.order._id)
-		$http.post('/payForBill', {orderId : $scope.order._id})
-			.then(function(response){ 
 
+		$http.post('/finalizeOrder', {wholeOrderId:$scope.order._id})
+			.then(function(response) {
+				if(response.data.message !== undefined && response.data.message === 'success!') {
+					alert('Thank you for placing your order');
+					window.location.href = '/';
+				}
 			})
+		// $http.post('/payForBill', {orderId : $scope.order._id})
+		// 	.then(function(response){ 
+
+		// 	})
 	}
 
 });

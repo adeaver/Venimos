@@ -155,6 +155,72 @@ ordering.addToOrder = function(req, res) {
 }
 
 ordering.finalizeOrder = function(req, res) {
+	var wholeOrderId = req.body.wholeOrderId;
+
+	wOrder.findOne({_id:wholeOrderId}, function (err, order) {
+		if(!err) {
+			var customer = new pizzapi.Customer({
+				firstName:order.firstName,
+				lastName:order.lastName,
+				address:order.address,
+				email:order.email
+			});
+
+			var dominosOrder = new pizzapi.Order({
+				customer:customer,
+				storeID:order.storeId,
+				deliveryMethod:'Delivery'
+			});
+
+			iOrder.find({wholeOrderId:wholeOrderId}, function (err, iOrders) {
+				if(!err) {
+					for(var index = 0; index < iOrders.length; index++) {
+						var myOrder = iOrders[index].myOrder;
+						for(var itemIndex = 0; itemIndex < myOrder.length; itemIndex++) {
+							var item = myOrder[index];
+
+							dominosOrder.addItem(new pizzapi.Item(
+								{
+								quantity:item.quantity,
+								options:item.toppings
+								})
+							);
+						}
+					}
+
+					dominosOrder.validate(function (result) {
+						if(result.success) {
+							dominosOrder.place(function (placeResult) {
+								if(placeResult.success) {
+									wOrder.remove({_id:wholeOrderId}, function(err) {
+										if(!err) {
+											iOrder.remove({wholeOrderId:wholeOrderId}, function(err) {
+												if(!err) {
+													res.json({'message':'success!'});
+												} else {
+													res.status(500).json({'message':'Error'});
+												}
+											});
+										} else {
+											res.status(500).json({'message':'Could not remove whole order'});
+										}
+									});
+								} else {
+									res.status(500).json({'message':'Cannot place order'})
+								}
+							});
+						} else {
+							res.status(500).json({'message':'Could not validate order'});
+						}
+					})
+				} else {
+					res.status(500).json({'message':'Error finalizing order'});
+				}
+			});
+		} else {
+			res.status(500).json({'message':'Error finalizing order'});
+		}
+	});
 
 }
 
