@@ -158,7 +158,6 @@ ordering.removeFromOrder = function(req, res) {
 	var price = parseFloat(req.params.price);
 
 	iOrder.findOneAndUpdate({splitwiseId:splitwiseId}, {$pull:{myOrder:{itemId:itemId}}, $inc:{price:-1*price}}, {new:true}, function (err, order) {
-		console.log(err);
 		if(!err) {
 			res.json(order);
 		} else {

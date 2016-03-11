@@ -21,7 +21,7 @@
 }
 
 #first_tab_productkeys {
-	width:20%;
+	width:15%;
 	float:left;
 }
 
@@ -48,4 +48,8 @@
 	width:50%;
 	float:right;
 	text-align: center;
+}
+
+#payForButton {
+	float:right;
 }

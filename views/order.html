@@ -124,6 +124,7 @@
 				</md-tab>
 
 				<md-tab label="Your Order" id="order_tab">
+					<h5 ng-if="$parent.individualOrder.myOrder.length > 0">Click items to remove them</h5>
 					<div class="entry" ng-repeat="item in $parent.individualOrder.myOrder"
 							ng-click="$parent.removeFromOrder(item.itemId, item.price)">
 						<h3>{{$parent.variants[item.code].Name}} (x{{item.quantity}}) @ ${{item.price}} each</h3>
@@ -136,7 +137,7 @@
 					</div>
 
 					<h3>Total: ${{$parent.individualOrder.price}}</h3>
-					<button ng-if="$parent.isOrderOwner" ng-click = "payForTotal()"> Pay for this bill </button>
+					<button class="btn" id="payForButton" ng-if="$parent.isOrderOwner" ng-click = "payForTotal()"> Pay for this bill </button>
 				</md-tab>
 
 				<md-tab ng-if="isOrderOwner" label="Friends">
