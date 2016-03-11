@@ -38,15 +38,13 @@ app.get('/getUserFriends', venimos.getUserFriendsGET)
 app.get('/oauthCallback', venimos.apiAccess); 
 app.get('/getExistingGroup', venimos.getGroupGET);
 
-app.get('/individualOrder/:splitwise_id', ordering.getIndividualOrder);
-app.get('/wholeOrder/:splitwise_id', ordering.getWholeOrder);
+app.get('/getOrdersForUser/:splitwise_id', ordering.getOrdersForUser);
+
 app.post('/createGroup', venimos.createGroupPOST); 
 app.post('/createOrder', ordering.createOrder);
 app.post('/addToOrder', ordering.addToOrder);
 app.post('/addCollaborator', ordering.addCollaborator);
 app.post('/removeCollaborator', ordering.removeCollaborator);
-app.post('/createIndividualOrder', ordering.createIndividualOrder);
-app.post('/removeIndividualOrder', ordering.removeIndividualOrder);
 app.post('/finalizeOrder', ordering.finalizeOrder);
 app.post('/payForBill', venimos.payForBillPOST); 
 app.post('/addToExistingGroup', venimos.addToExistingGroupPOST); 

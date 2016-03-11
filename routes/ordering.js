@@ -30,10 +30,24 @@ ordering.createOrder = function(req, res) {
 
 	// This should update
 	wOrder.findOneAndUpdate({splitwiseId:splitwiseId}, {$set:createdWOrder}, {upsert:true, new:true}, function (err, order) {
-		if(err) {
-			res.status(500).send('Error creating whole order');
+		if(!err) {
+			newIOrder = createIndividualOrder(firstName + " " + lastName, splitwiseId, order._id);
+
+			newIOrder.save(function (err, createdIOrder) {
+				if(!err) {
+					var output = {};
+
+					output.individualOrder = createdIOrder;
+					output.wholeOrder = order;
+
+					res.json(output);
+
+				} else {
+					res.status(500).json({'message':'failed to add individual order'});
+				}
+			});
 		} else {
-			res.json(order);
+			res.status(500).json({'message':'failed to add whole order'});
 		}
 	});
 }
@@ -45,11 +59,19 @@ ordering.addCollaborator = function(req, res) {
 	var collaboratorName = req.body.collaboratorName;
 
 	wOrder.findOneAndUpdate({_id:wOrderId}, {$push:{friendsOrders:collaboratorSplitwiseId}}, {new:true}, function (err, order) {
-		if(err) {
-			res.status(500).send('Error adding collaborator');
-		}
+		if(!err) {
+			newIOrder = createIndividualOrder(collaboratorName, collaboratorSplitwiseId, wOrderId);
 
-		res.json(order)
+			newIOrder.save(function (err) {
+				if(!err) {
+					res.json(order);
+				} else {
+					res.json({'message':'Error adding individual order'});
+				}
+			});
+		} else {
+			res.status(500).json({'message':'Error adding collaborator'});
+		}
 	});
 }
 
@@ -58,75 +80,43 @@ ordering.removeCollaborator = function(req, res) {
 	var collaboratorSplitwiseId = req.body.collaboratorSplitwiseId;
 
 	wOrder.findOneAndUpdate({_id:wOrderId}, {$pull:{friendsOrders:{$in:[collaboratorSplitwiseId]}}}, {new:true}, function (err, order) {
-		if(err) {
-			res.status(500).send('Error removing collaborator');
+		if(!err) {
+			iOrder.remove({splitwiseId:collaboratorSplitwiseId}, function(err) {
+				if(!err) {
+					res.json(order);
+				} else {
+					res.json({'message':'failed to remove collaborator from order'});
+				}
+			});
+		} else {
+			res.status(500).json({'message':'Error removing collaborator'});
 		}
-
-		return res.json(order);
 	});
 }
 
-// works
-ordering.createIndividualOrder = function(req, res) {
-	
-	var splitwiseId = req.body.splitwiseId;
-	var name = req.body.first_name + " " + req.body.last_name;
-	var wholeOrderId = req.body.wholeOrderId;
-
-	var createdIOrder = new iOrder({
-		splitwiseId:splitwiseId,
-		name:name,
-		wholeOrderId:wholeOrderId,
-		myOrder:[],
-		price:0
-	});
-
-	createdIOrder.save(function(err, order) {
-		if(err) {
-			res.status(500).send('Error creating new order');
-		}
-
-		res.json(order);
-	})
-}
-
-ordering.removeIndividualOrder = function(req, res) {
-	var splitwiseId = req.body.splitwiseId;
-
-	iOrder.remove({splitwiseId:splitwiseId}, function(err) {
-		if(err) {
-			res.status(500).send('Error removing order');
-		}
-
-		res.send('Successfully removed order');
-	});
-}
-
-// works
-ordering.getIndividualOrder = function(req, res) {
+ordering.getOrdersForUser = function(req, res) {
 	var splitwiseId = req.params.splitwise_id;
 
-	iOrder.find({splitwiseId:splitwiseId}, function(err, order) {
-		if(err) {
-			res.send(500);
+	iOrder.findOne({splitwiseId:splitwiseId}, function (err, findIOrder) {
+		if(!err) {
+			var splitwiseIds = [splitwiseId];
+
+			wOrder.findOne({friendsOrders:{'$in':splitwiseIds}}, function (err, findWOrder) {
+				if(!err) {
+					var output = {};
+
+					output.individualOrder = findIOrder;
+					output.wholeOrder = findWOrder;
+
+					res.json(output);
+				} else {
+					res.status(500).json({'message':'Error finding whole order'});
+				}
+			})
+		} else {
+			res.status(500).json({'message':'Error finding individual order'});
 		}
-
-		res.json(order);
-	});
-}
-
-// WORKS
-ordering.getWholeOrder = function(req, res) {
-	var splitwiseId = [];
-	splitwiseId.push(req.params.splitwise_id);
-
-	wOrder.find({friendsOrders:{'$in':splitwiseId}}, function(err, order) {
-		if(err) {
-			res.status(500).send('Error getting whole order');
-		}
-
-		res.json(order);
-	});
+	})
 }
 
 // Works
@@ -226,14 +216,12 @@ ordering.finalizeOrder = function(req, res) {
 
 module.exports = ordering;
 
-function createIOrderFromWOrder(nwOrderId, name, splitwiseId) {
-	var createdIOrder = new iOrder({
-		splitwiseId:splitwiseId,
+var createIndividualOrder = function(name, id, wholeOrderId) {
+	return createdIOrder = new iOrder({
+		splitwiseId:id,
 		name:name,
-		wholeOrderId:nwOrderId,
+		wholeOrderId:wholeOrderId,
 		myOrder:[],
 		price:0
 	});
-
-	return createdIOrder;
 }
