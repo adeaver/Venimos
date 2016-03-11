@@ -80,9 +80,9 @@ routes.apiAccess = function(req, res){
 						console.log("There has been an error saving the user"); 
 					}
 					user = u; 
-					console.log("user", user);
 					isAuthenticated = true;  
-					res.redirect('/test'); 
+					// res.redirect('/test');
+					res.redirect('/order')
 				})
 				// console.log("Do you ")
 			}
@@ -93,11 +93,11 @@ routes.apiAccess = function(req, res){
 		})
 }; 
 
-routes.test = function(req, res){ 
-	console.log(path.join(__dirname, '../views', 'index2.html'))
-	res.sendFile(path.join(__dirname, '../views', 'index2.html'));
+// routes.test = function(req, res){ 
+// 	console.log(path.join(__dirname, '../views', 'index2.html'))
+// 	res.sendFile(path.join(__dirname, '../views', 'index2.html'));
 
-}; 
+// }; 
 
 routes.getUserGET = function(req, res){ 
 	if (isAuthenticated){ 
@@ -121,5 +121,71 @@ routes.getUserFriendsGET = function(req, res){
 	else{ 
 		res.redirect('/')
 	}
+}; 
+; 
+routes.payForBillPOST = function(req, res){
+	// console.log(splitwiseApi.isServiceOk())
+	console.log("PAYING for this backend"); 
+	console.log("REq.Body", req); 
+
+	// oneOrder.find({wholeOrderid: req.body.id}, function(err, pizzaOrders){ 
+	// 	console.log("Pizza Orders from mongo", pizzaOrders); 
+
+	// })
+
+}; 
+
+routes.createGroupPOST = function(req, res){ 
+	console.log("in create new group")
+	var id = req.body.id; 
+	var name = req.body.first_name; 
+	if ((isAuthenticated) && (splitwiseApi != null) && (splitwiseApi.isServiceOk())){ 
+		splitwiseApi.createGroup('pizzaOrder/' + name,[{user_id:id}])
+			.then(function(group){ 
+				console.log("this object", group); 
+				res.send(group)
+			})
+	}
+	else{ 
+		res.redirect('/'); 
+	}
+}; 
+
+routes.addToExistingGroupPOST = function(req, res){ 
+	console.log(req.body); 
+	var newUser = req.body.newCollaborator; 
+	var existingOrderId = req.body.orderId; 
+	console.log('REQ.BODY', req.body); 
+	console.log('existing ORDER ID', existingOrderId); 
+	console.log("in add to existingOrderId", newUser, existingOrderId)
+	if ((isAuthenticated) && (splitwiseApi != null) && (splitwiseApi.isServiceOk())){ 
+		splitwiseApi.addUserToGroup(existingOrderId, newUser)
+			.then(function(group){ 
+				console.log("added to existing group HERE", group); 
+				res.send(200); 
+			})
+	}
+	else{ 
+		res.redirect('/'); 
+	}
+}; 
+
+routes.getGroupGET = function(req, res){ 
+	console.log("IN GROUP GET")
+	var groupId = req.groupId; 
+	console.log("group id", groupId)
+	if ((isAuthenticated) && (splitwiseApi != null) && (splitwiseApi.isServiceOk())){ 
+		splitwiseApi.getGroup(groupId)
+			.then(function(group){ 
+				console.log("this object in get Group GET", group); 
+				res.send(group); 
+			})
+	}
+	else{ 
+		res.redirect('/'); 
+	}
 }
+
 module.exports = routes; 
+
+// 'userShares' : [{'user_id' : user.id, 'paid_share' : 0.0, 'owed_share' : 5.0}] 

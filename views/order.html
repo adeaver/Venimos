@@ -134,6 +134,7 @@
 					</div>
 
 					<h3>Total: ${{$parent.individualOrder.price}}</h3>
+					<button ng-if="$parent.isOrderOwner" ng-click = "payForTotal()"> Pay for this bill </button>
 				</md-tab>
 
 				<md-tab ng-if="isOrderOwner" label="Friends">
@@ -152,7 +153,6 @@
 							<h5>{{friend.firstName}} {{friend.lastName}}</h5>
 						</div>
 					</div>
-
 				</md-tab>
 			</md-tabs>
 		</md-content>

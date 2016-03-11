@@ -68,8 +68,9 @@ ordering.removeCollaborator = function(req, res) {
 
 // works
 ordering.createIndividualOrder = function(req, res) {
+	
 	var splitwiseId = req.body.splitwiseId;
-	var name = req.body.name;
+	var name = req.body.first_name + " " + req.body.last_name;
 	var wholeOrderId = req.body.wholeOrderId;
 
 	var createdIOrder = new iOrder({
