@@ -1,4 +1,4 @@
-var app = angular.module('venimos', []);
+var app = angular.module('venimos', ['ngMaterial']);
 
 app.controller('orderController', function ($scope, $http) {
 	$scope.order = null;
