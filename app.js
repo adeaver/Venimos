@@ -7,7 +7,10 @@ var AuthApi = require('splitwise-node');
 var oauthIds = require('./oauth'); 
 var https = require('https'); 
 
-app.use( bodyParser.json() ); 
+// app.use(express.cookieParser());
+// app.use(express.session({secret: '1234567890QWERTY'})); 
+
+app.use(bodyParser.json() ); 
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -36,14 +39,18 @@ app.get('/getUser', venimos.getUserGET);
 app.get('/getUserFriends', venimos.getUserFriendsGET)
 // app.get('/test', venimos.test); 
 app.get('/oauthCallback', venimos.apiAccess); 
+app.get('/getExistingGroup', venimos.getGroupGET); 
 
 app.get('/individualOrder/:splitwise_id', ordering.getIndividualOrder);
 app.get('/wholeOrder/:splitwise_id', ordering.getWholeOrder);
-
+app.post('/createGroup', venimos.createGroupPOST); 
 app.post('/createOrder', ordering.createOrder);
 app.post('/addToOrder', ordering.addToOrder);
 app.post('/addCollaborator', ordering.addCollaborator);
 app.post('/createIndividualOrder', ordering.createIndividualOrder);
-app.post('/payForBill', venimos.payForBillPOST)
+app.post('/payForBill', venimos.payForBillPOST); 
+app.post('/addToExistingGroup', venimos.addToExistingGroupPOST); 
+
+
 
 app.listen(3000);
