@@ -17,9 +17,8 @@ var isAuthenticated = false;
 var splitwiseApi; 
 
 var saveUser = function(api, callback){
-	// console.log('saving user'); 
+	// save user after authentication
 	api.getCurrentUser().then(function(u){ 
-		// console.log(u)
 		return callback(u); 
 	}, function(error){ 
 		console.log(error)
@@ -27,42 +26,29 @@ var saveUser = function(api, callback){
 	}); 
 }
 
-routes.home = function(req, res){ 
-	//Input: request, response objects for get request
-	//Output: --. renders log in page 
-	res.send("This is home"); 
-	// res.redirect('https://api.venmo.com/v1/oauth/authorize?client_id=CLIENT_ID&scope=make_payments%20access_profile')
-}; 
+var calculateTotalCost = function(orders, callback){ 
+	var sum = 0; 
+	orders.forEach(function(o){ 
+		sum +=o.price
+	})
+
+	return callback(sum); 
+}
 
 routes.login = function(req, res){
 	var userOAuthToken, userOAuthTokenSecret;
 	var url; 
 	var userAuthUrl = authApi.getOAuthRequestToken()
 	    .then(function(options){ 
-	        console.log("options", options); 
 	        secret = options.secret; 
 	        url = authApi.getUserAuthorisationUrl(options.token);
-
+	        //redirect to this authorization url after login
 	        res.send(url);  
 
 	    }, function(err){ 
 	    	console.log(err); 
 	    });
 }; 
-
-// routes.addNewOrderPOST = function(req, res){ 
-// 	var iOrder = new oneOrder({name: req.body.name, price: req.body.price, myOrder: req.body.myOrder})
-// 	iOrder.save(function(err){ 
-// 		if(err){ 
-// 			console.log("There has been an error saving your order", err); 
-// 		}
-// 	})
-
-// 	oneOrder.find({}, function(err, all){ 
-// 		res.send(all); 
-// 	})
-// };
-
 
 routes.apiAccess = function(req, res){  
 	splitwiseApi = authApi.getSplitwiseApi(req.query.oauth_token, secret);  
@@ -81,10 +67,8 @@ routes.apiAccess = function(req, res){
 					}
 					user = u; 
 					isAuthenticated = true;  
-					// res.redirect('/test');
 					res.redirect('/order')
 				})
-				// console.log("Do you ")
 			}
 		}, 
 		function(error){ 
@@ -92,12 +76,6 @@ routes.apiAccess = function(req, res){
 			res.redirect('/'); 
 		})
 }; 
-
-// routes.test = function(req, res){ 
-// 	console.log(path.join(__dirname, '../views', 'index2.html'))
-// 	res.sendFile(path.join(__dirname, '../views', 'index2.html'));
-
-// }; 
 
 routes.getUserGET = function(req, res){ 
 	if (isAuthenticated){ 
@@ -123,14 +101,110 @@ routes.getUserFriendsGET = function(req, res){
 		res.redirect('/')
 	}
 }; 
-; 
+
 routes.payForBillPOST = function(req, res){
-	// console.log(splitwiseApi.isServiceOk())
+	var orderId = req.params.orderId; 
+	console.log()
+	var wholeOrderMainSplitWiseId; 
+	var costTotal; 
 	console.log("PAYING for this backend"); 
-	console.log(req.body); 
-	oneOrder.find({wholeOrderId : req.body.orderId}, function(err, pizzaOrders){ 
-		console.log("Pizza Orders from mongo", pizzaOrders); 
+	splitwiseApi = authApi.getSplitwiseApi(req.query.oauth_token, secret);  
+	wholeOrder.find({_id : orderId }, function(err, wholePizzaOrder){ 
+
+		console.log(wholePizzaOrder); 
+
+		wholeOrderMainSplitWiseId = wholePizzaOrder.splitwiseId
+
+		oneOrder.find({wholeOrderId : orderId}, function(err, pizzaOrders){
+			calculateTotalCost(pizzaOrders, function(total){ 
+				costTotal = total; 
+			}) 
+
+			console.log("Pizza Orders from mongo", pizzaOrders);
+			pizzaOrders.forEach(function(order){ 
+				splitwiseApi.createExpense({payment : true, cost : costTotal, description: 'pizza order'}, 
+					[{user_id : order.splitwiseId, paid_share: 0.00, owed_share: order.price}])
+					.then(function(success){ 
+						console.log(success)
+					}, function(error){ 
+						console.log(error); 
+					})
+			})
+		}); 
+
 	}); 
+
+	// splitwiseApi.createExpense({payment : true, cost : 90.78, description: "You know what"}, 
+	// 				[{user_id : '3604533', paid_share: 0.00, owed_share: 70.78}])
+	// 				.then(function(success){ 
+	// 					console.log(success)
+	// 				}, function(error){ 
+	// 					console.log(error); 
+	// 				})
+
+	// https.request('https://secure.splitwise.com/api/v3.0/create_expense', {payment : true, cost : 90.78, description: "You know what"}, 
+	// 	[{user_id : 3604533, paid_share: 0.00, owed_share: 70.78}])
+	// 	.then(function(success){ 
+	// 		console.log(success)
+	// 	}, function(error){ 
+	// 		console.log(error); 
+	// 	})
+	// request.post(
+	//     'https://secure.splitwise.com/api/v3.0/create_expense',
+	//     { form: { expense: {payment : true, cost : 90.78, description: "You know what"}, 
+	//     	userShares : [{user_id : 3604533, paid_share: 0.00, owed_share: 70.78}] } },
+	//     function (error, response, body) {
+
+	//     	console.log(response); 
+	//         if (!error && response.statusCode == 200) {
+	//             console.log(body)
+	//         }
+	//     }
+	// );
+
+	// var options = {
+	//   hostname: 'https://secure.splitwise.com/api/v3.0/create_expense',
+	//   method: 'POST',
+	//   headers: {
+	//       'Content-Type': 'application/json',
+	//   }
+	// };
+	// var req = http.request(options, function(res) {
+	//   console.log('Status: ' + res.statusCode);
+	//   console.log('Headers: ' + JSON.stringify(res.headers));
+	//   res.setEncoding('utf8');
+	//   res.on('data', function (body) {
+	//     console.log('Body: ' + body);
+	//   });
+	// });
+	// req.on('error', function(e) {
+	//   console.log('problem with request: ' + e.message);
+	// });
+	// // write data to request body
+	// req.write('{"string": "Hello, World"}');
+	// req.end();	
+
+	// request({
+	//     url:'https://secure.splitwise.com/api/v3.0/create_expense',
+	//     method: "POST",
+	//     json: true,   // <--Very important!!!
+	//     body: myJSONObject
+	// }, function (error, response, body){
+	//     console.log(response);
+	// });
+
+	// request.post({url:'https://secure.splitwise.com/api/v3.0/create_expense', 
+	// 	form: {expense: {payment : true, cost : 90.78, description: "You know what"}, 
+	// 	userShares : [{user_id : 3604533, paid_share: 0.00, owed_share: 70.78}] }}, 
+	// 	function(err,httpResponse,body){ 
+	// 		if(err){ 
+	// 			console.log(err); 
+	// 		}
+	// 		console.log(httpResponse); 
+	// 		console.log(body); 
+	// 	})
+
+
 }; 
 
 routes.createGroupPOST = function(req, res){ 
@@ -182,8 +256,18 @@ routes.getGroupGET = function(req, res){
 	else{ 
 		res.redirect('/'); 
 	}
+}; 
+
+routes.removeUserPOST = function(req, res){ 
+	var userId = req.body.userid; 
+	var groupId = req.body.groupid; 
+
+	splitwiseApi.removeUserFromGroup(groupId, userId). 
+		then(function(sucess){
+			console.log("User" + req.body.first_name + " " + req.body.last_name + "has been removed from the group" + sucess); 
+		}, function(errors){
+			console.log(errors); 
+		})
 }
 
 module.exports = routes; 
-
-// 'userShares' : [{'user_id' : user.id, 'paid_share' : 0.0, 'owed_share' : 5.0}] 

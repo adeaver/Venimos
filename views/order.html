@@ -27,10 +27,10 @@
 
 	<!-- Angular Material Library -->
 	<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
-
 	<script src="./javascripts/order.js"></script>
 
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+
 </head>
 
 <body ng-controller="orderController">
@@ -143,13 +143,14 @@
 						<div class="entry" ng-repeat="friend in $parent.collaborators"
 							ng-click="$parent.removeCollaborator(friend.id)">
 							<h5>{{friend.first_name}} {{friend.last_name}}</h5>
+							<button ng-click = 'removeUserFromGroup(friend.id)'> Remove </button>
 						</div>					
 					</div>
 
 					<div id="friendsToAdd">
 						<h3>Splitwise Friends You Can Add</h3>
 						<div class="entry" ng-repeat="friend in $parent.friendsNotAdded"
-							ng-click="$parent.addCollaborator(friend.first_name, friend.last_name, friend.id)">
+							ng-click="$parent.addCollaborator(friend)">
 							<h5>{{friend.first_name}} {{friend.last_name}}</h5>
 						</div>
 					</div>

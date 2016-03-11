@@ -43,6 +43,8 @@ app.controller('orderController', function ($scope, $http, $document) {
 	$scope.collaborators = [];
 	$scope.friendsNotAdded = [];
 
+	$scope.charged = false;  
+
 	// var you = { id: 3000007,
  //  first_name: 'FATTY',
  //  last_name: 'JUST KIDDING',
@@ -84,6 +86,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 
 	var addToExistingGroup = function(newUser, orderId){ 
 		console.log("in add to existing group")
+
 		$http.post('/addToExistingGroup', {newCollaborator : newUser, groupId : $scope.groupId})
 			.then(function(something){ 
 				console.log("group", something); 
@@ -101,7 +104,8 @@ app.controller('orderController', function ($scope, $http, $document) {
 
 	var getUserFriends = function(){ 
 		$http.get('/getUserFriends')
-			.then(function(friends){ 
+			.then(function(friends){
+				console.log("friends.data", friends.data);  
 				$scope.splitwiseFriends = friends.data; 
 				console.log('SPLITWISE FRIENDS', $scope.splitwiseFriends);
 				$scope.getSeparateCollaboratorsFromFriends();
@@ -116,12 +120,12 @@ app.controller('orderController', function ($scope, $http, $document) {
 					console.log("response data", response.data)
 					$scope.order = response.data[0];
 					$scope.isOrderOwner = $scope.order.splitwiseId == $scope.splitwiseUser.id;
-					if($scope.isOrderOwner){ 
-						createGroup($scope.splitwiseUser);
-					}
-					else { 
-						addToExistingGroup($scope.splitwiseUser, $scope.orderId); 
-					}
+					// if($scope.isOrderOwner){ 
+					// 	createGroup($scope.splitwiseUser);
+					// }
+					// else { 
+					// 	addToExistingGroup($scope.splitwiseUser, $scope.orderId); 
+					// }
 					$scope.getMenu($scope.order.storeId);
 					getUserFriends();
 				}
@@ -147,7 +151,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 			}
 
 			//console.log("$scope.splitwiseUser", $scope.splitwiseUser)
-			// createGroup($scope.splitwiseUser);
+			createGroup($scope.splitwiseUser);
 			//console.log('THIS IS THE GROUP ID,', $scope.orderId)
 			// addToExistingGroup($scope.splitwiseUser, $scope.orderId);
 			// addToExistingGroup(you, $scope.orderId); 
@@ -197,6 +201,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 
 			$http.post('/createIndividualOrder', {
 				splitwiseId:$scope.splitwiseUser.id,
+				// splitwiseId:$scope.groupId
 				wholeOrderId:$scope.order._id,
 				first_name:$scope.splitwiseUser.first_name, 
 				last_name:$scope.splitwiseUser.last_name
@@ -245,10 +250,11 @@ app.controller('orderController', function ($scope, $http, $document) {
 		});
 	}
 
-	$scope.addCollaborator = function(first, last, id) {
+	$scope.addCollaborator = function(user) {
 		// Should check to make sure that someone doesn't already have an order open
-		var name = first + " " + last;
-		
+		var name = user.first_name + " " + user.last_name;
+		var id = user.id;
+		addToExistingGroup(user, $scope.groupId)
 		$http.post('/addCollaborator', {
 			collaboratorName:name,
 			collaboratorSplitwiseId:id,
@@ -260,8 +266,8 @@ app.controller('orderController', function ($scope, $http, $document) {
 			$scope.getSeparateCollaboratorsFromFriends();
 
 			$http.post('/createIndividualOrder', {
-				firstName:first,
-				lastName:last,
+				firstName:user.first_name,
+				lastName:user.last_name,
 				splitwiseId:id,
 				wholeOrderId:$scope.order._id
 			});
@@ -338,6 +344,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 		console.log('Order', $scope.order);
 
 		for(var index = 0; index < $scope.splitwiseFriends.length; index++) {
+			// console.log($scope.splitwiseFriends)
 			if($scope.order.friendsOrders.indexOf(String($scope.splitwiseFriends[index].id)) != -1) {
 				$scope.collaborators.push($scope.splitwiseFriends[index]);
 			} else {
@@ -350,12 +357,27 @@ app.controller('orderController', function ($scope, $http, $document) {
 	}
 
 	$scope.payForTotal = function(){ 
+		$scope.charged = true; 
 		console.log("paying")
 		console.log("order id", $scope.order._id)
-		$http.post('/payForBill', {orderId : $scope.order._id})
+		$http.post('/payForBill/' + $scope.order._id )
 			.then(function(response){ 
 
 			})
+
+
+	}
+
+	$scope.removeUserFromGroup = function(userSplitwiseId){ 
+		if (!$scope.charged){ 
+			$http.post('/removeUser', {userid: userSplitwiseId, groupid: $scope.groupId})
+				.then(function(response){ })
+
+		}
+		else { 
+			alert("cannot removed, already charged"); 
+		}
+
 	}
 
 });
