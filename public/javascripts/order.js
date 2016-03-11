@@ -246,6 +246,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 	}
 
 	$scope.addCollaborator = function(first, last, id) {
+		// Should check to make sure that someone doesn't already have an order open
 		var name = first + " " + last;
 		
 		$http.post('/addCollaborator', {
@@ -283,11 +284,6 @@ app.controller('orderController', function ($scope, $http, $document) {
 	}
 
 	// Formatting functions
-
-	$scope.couponAvailable = function(dates) {
-		return dates.indexOf($scope.date) != -1 || false;
-	}
-
 
 	$scope.checkIsDefault = function(defaultToppings, topping) {
 		return defaultToppings.indexOf(topping) != -1 || false;
