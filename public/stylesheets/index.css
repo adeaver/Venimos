@@ -1,0 +1,9 @@
+.newOrder {
+	width:50%;
+	padding:30px;
+	display:block;
+	margin:auto;
+	margin-top:20%;
+	border: 5px solid #18bc9c;
+	border-radius:25px;
+}

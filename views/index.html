@@ -15,6 +15,16 @@
     <!-- <link href="/stylesheets/simple-sidebar.css" rel="stylesheet"> -->
 
     <!-- SPELLS -->
+    <link href="./stylesheets/index.css" rel="stylesheet" />
+    <link href="./stylesheets/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="./stylesheets/css/freelancer.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="./stylesheets/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
     
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js">
@@ -27,9 +37,11 @@
 <body data-spy="scroll"  ng-controller="oauthController">
     <div id ="wrapper">
         <div ng-hide= "pay" class = "order"> 
-            <!-- <form class ="newOrder">  -->
-                <button class = "submitButton"  ng-click = "authenticate()"> Login With Split wise In order to use our app </button>  <!-- Include this later ng-click = "pay = true" -->
-            <!-- </form> -->
+            <form class ="newOrder">
+                <h1>Venimos</h1>
+                <h6>Collaborative Domino's Orders without the stress of figuring out the IOUs</h6>
+                <button class = "form-control"  ng-click = "authenticate()">Login with Splitwise</button>  <!-- Include this later ng-click = "pay = true" -->
+            </form>
         </div>
     </div>
 </body>
