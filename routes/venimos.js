@@ -112,10 +112,11 @@ routes.getUserFriendsGET = function(req, res){
 
 	if ((isAuthenticated) && (splitwiseApi != null) && (splitwiseApi.isServiceOk())){ 
 		splitwiseApi.getFriends().then(function(friends){ 
-			console.log("friends", friends)
+			res.json(friends);
 
 		}, function(error){ 
 			console.log("error", error); 
+			res.status(500).send('Error');
 		}); 
 	}
 	else{ 

@@ -142,15 +142,15 @@
 						<h3>Collaborators On This Order</h3>
 						<div class="entry" ng-repeat="friend in $parent.collaborators"
 							ng-click="$parent.removeCollaborator(friend.id)">
-							<h5>{{friend.firstName}} {{friend.lastName}}</h5>
+							<h5>{{friend.first_name}} {{friend.last_name}}</h5>
 						</div>					
 					</div>
 
 					<div id="friendsToAdd">
 						<h3>Splitwise Friends You Can Add</h3>
 						<div class="entry" ng-repeat="friend in $parent.friendsNotAdded"
-							ng-click="$parent.addCollaborator(friend.firstName, friend.lastName, friend.id)">
-							<h5>{{friend.firstName}} {{friend.lastName}}</h5>
+							ng-click="$parent.addCollaborator(friend.first_name, friend.last_name, friend.id)">
+							<h5>{{friend.first_name}} {{friend.last_name}}</h5>
 						</div>
 					</div>
 				</md-tab>

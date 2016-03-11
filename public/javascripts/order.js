@@ -102,7 +102,9 @@ app.controller('orderController', function ($scope, $http, $document) {
 	var getUserFriends = function(){ 
 		$http.get('/getUserFriends')
 			.then(function(friends){ 
-				$scope.splitwiseFriends = friends; 
+				$scope.splitwiseFriends = friends.data; 
+				console.log('SPLITWISE FRIENDS', $scope.splitwiseFriends);
+				$scope.getSeparateCollaboratorsFromFriends();
 			})
 	}
  
@@ -121,7 +123,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 						addToExistingGroup($scope.splitwiseUser, $scope.orderId); 
 					}
 					$scope.getMenu($scope.order.storeId);
-					$scope.getSeparateCollaboratorsFromFriends();
+					getUserFriends();
 				}
 			});
 	}
@@ -137,16 +139,21 @@ app.controller('orderController', function ($scope, $http, $document) {
 		.then(function(user){
 			// console.log("user id", user.data)
 			// $scope.splitwiseId = user.data.id; 
-			console.log('CRAP BALLS'); 
-			$scope.splitwiseUser = user.data;  
-			console.log("$scope.splitwiseUser", $scope.splitwiseUser)
+			//console.log('CRAP BALLS'); 
+			$scope.splitwiseUser = user.data; 
+
+			if($scope.splitwiseUser.id === undefined) {
+				window.location.href = '/';
+			}
+
+			//console.log("$scope.splitwiseUser", $scope.splitwiseUser)
 			// createGroup($scope.splitwiseUser);
-			console.log('THIS IS THE GROUP ID,', $scope.orderId)
+			//console.log('THIS IS THE GROUP ID,', $scope.orderId)
 			// addToExistingGroup($scope.splitwiseUser, $scope.orderId);
 			// addToExistingGroup(you, $scope.orderId); 
 			// getExistingOrder($scope.orderId); 
-			// getUserFriends();  
-			console.log($scope.splitwiseUser); 
+			//getUserFriends();  
+			//console.log($scope.splitwiseUser); 
 			getWholeOrder($scope.splitwiseUser); 
 			getIndividualOrder($scope.splitwiseUser)
 
@@ -187,8 +194,6 @@ app.controller('orderController', function ($scope, $http, $document) {
 		}).then(function (response) {
 			$scope.order = response.data;
 			$scope.isOrderOwner = true;
-
-			$scope.getSeparateCollaboratorsFromFriends();
 
 			$http.post('/createIndividualOrder', {
 				splitwiseId:$scope.splitwiseUser.id,
@@ -248,12 +253,14 @@ app.controller('orderController', function ($scope, $http, $document) {
 			collaboratorSplitwiseId:id,
 			orderId:$scope.order._id
 		}).then(function (response) {
+			console.log('Collaborator', response.data);
 			$scope.order = response.data;
 
 			$scope.getSeparateCollaboratorsFromFriends();
 
 			$http.post('/createIndividualOrder', {
-				name:name,
+				firstName:first,
+				lastName:last,
 				splitwiseId:id,
 				wholeOrderId:$scope.order._id
 			});
@@ -329,13 +336,21 @@ app.controller('orderController', function ($scope, $http, $document) {
 		$scope.collaborators = [];
 		$scope.friendsNotAdded = [];
 
+		console.log('Collaborators', $scope.collaborators);
+		console.log('Friends Not Added', $scope.friendsNotAdded);
+		console.log('Friends', $scope.splitwiseFriends);
+		console.log('Order', $scope.order);
+
 		for(var index = 0; index < $scope.splitwiseFriends.length; index++) {
-			if($scope.order.friendsOrders.indexOf($scope.splitwiseFriends[index].id) != -1) {
+			if($scope.order.friendsOrders.indexOf(String($scope.splitwiseFriends[index].id)) != -1) {
 				$scope.collaborators.push($scope.splitwiseFriends[index]);
 			} else {
 				$scope.friendsNotAdded.push($scope.splitwiseFriends[index]);
 			}
 		}
+
+		console.log('Collaborators', $scope.collaborators);
+		console.log('Friends Not Added', $scope.friendsNotAdded);
 	}
 
 	$scope.payForTotal = function(){ 
