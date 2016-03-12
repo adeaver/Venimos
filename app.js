@@ -48,5 +48,7 @@ app.post('/finalizeOrder', ordering.finalizeOrder);
 app.post('/payForBill', venimos.payForBillPOST); 
 
 app.post('/addToExistingGroup', venimos.addToExistingGroupPOST); 
-
-app.listen(3000);
+var PORT = process.env.PORT || 3000;
+    app.listen(PORT, function() {
+      console.log("Application running on port: ", PORT);
+});
