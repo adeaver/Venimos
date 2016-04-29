@@ -1,29 +1,21 @@
 var venimosApp = angular.module('venimosApp', []);
 
-function oauthController($scope, $http){ 
+function oauthController($scope, $http, $window){
 
-    $scope.authenticate = function(){ 
-    console.log("Are you in authenticate?")
+  $scope.authenticate = function(){ // make sure indentation levels match
     $http.get('/login')
-    .success(function(url){ 
-      // console.log("object", object)
-      window.location.href = url;
-      // console.log("user", object.api.getCurrentUser())
-      // window.location.href = "https://secure.splitwise.com/api/v3.0/get_current_user"
+    .success(function(url){
+      /* Using `$window` instead of `window` makes your code more easily
+         testable, because most Angular test frameworks give you infrastructure
+         for mocking (creating fake versions of) services, like `$window`, but
+         they don't give you ways to provide global variables, like `window`.
+      */
+      $window.location.href = url;
     })
-    .error(function(err){ 
-      if(err){ 
-        console.log("There has been an error", err); 
+    .error(function(err){
+      if(err){
+        console.log("There has been an error", err);
       }
     })
-  }
-
-  $scope.testFunction= function(){
-    $http.get('/getUserFriends')
-      .success(function(u){
-        console.log(u)
-      })
-  }
-} 
-
-
+  };
+}
