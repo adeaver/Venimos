@@ -4,10 +4,10 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var app = express();
 var AuthApi = require('splitwise-node');
-var oauthIds = require('./oauth'); 
-var https = require('https'); 
+var oauthIds = require('./oauth');
+var https = require('https');
 
-app.use(bodyParser.json() ); 
+app.use(bodyParser.json() );
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -16,8 +16,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var pizza = require('./routes/pizza.js');
 var ordering = require('./routes/ordering.js');
-var venimos = require('./routes/venimos'); 
+var venimos = require('./routes/venimos');
 
+// Your mongolab username/password shouldn't be stored in plaintext
+// on Github -- unsafe. See the comment I left in your auth.js file
 mongoose.connect('mongodb://pizza:thehutt@ds023478.mlab.com:23478/pizza4all', function(err) {
 	if(err) {
 		throw err;
@@ -27,17 +29,17 @@ mongoose.connect('mongodb://pizza:thehutt@ds023478.mlab.com:23478/pizza4all', fu
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 app.get('/', pizza.home);
-app.get('/login', venimos.login); 
+app.get('/login', venimos.login);
 app.get('/order', pizza.order);
 app.get('/store/:store_type/:address', pizza.getStores);
 app.get('/menu/:store_id', pizza.getStoreMenu);
-app.get('/getUser', venimos.getUserGET); 
+app.get('/getUser', venimos.getUserGET);
 app.get('/getUserFriends', venimos.getUserFriendsGET)
-app.get('/oauthCallback', venimos.apiAccess); 
+app.get('/oauthCallback', venimos.apiAccess);
 app.get('/getExistingGroup', venimos.getGroupGET);
 app.get('/getOrdersForUser/:splitwise_id', ordering.getOrdersForUser);
 
-app.post('/createGroup', venimos.createGroupPOST); 
+app.post('/createGroup', venimos.createGroupPOST);
 app.post('/createOrder', ordering.createOrder);
 app.post('/addToOrder', ordering.addToOrder);
 app.delete('/removeFromOrder/:splitwise_id/:item_id/:price', ordering.removeFromOrder);
@@ -45,9 +47,9 @@ app.delete('/removeFromOrder/:splitwise_id/:item_id/:price', ordering.removeFrom
 app.post('/addCollaborator', ordering.addCollaborator);
 app.post('/removeCollaborator', ordering.removeCollaborator);
 app.post('/finalizeOrder', ordering.finalizeOrder);
-app.post('/payForBill', venimos.payForBillPOST); 
+app.post('/payForBill', venimos.payForBillPOST);
 
-app.post('/addToExistingGroup', venimos.addToExistingGroupPOST); 
+app.post('/addToExistingGroup', venimos.addToExistingGroupPOST);
 var PORT = process.env.PORT || 3000;
     app.listen(PORT, function() {
       console.log("Application running on port: ", PORT);

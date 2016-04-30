@@ -9,6 +9,17 @@ parser.objectsToList = function(data) {
 	}
 
 	return output;
+
+	/*
+	This does exactly the same thing as your function, more concisely:
+	return Object.keys(data).map(function(aKey) {
+		return data[aKey];
+	});
+
+	...alternatively, is there any reason why Object.values(data) wouldn't
+	have worked for you? I think this is exactly what it's supposed to do.
+	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values
+	*/
 }
 
 parser.removeSuperKeys = function(data) {
@@ -19,7 +30,7 @@ parser.removeSuperKeys = function(data) {
 		var subKeyList = Object.keys(data[keyList[index]]);
 		for(var sIndex = 0; sIndex < subKeyList.length; sIndex++) {
 			output[subKeyList[sIndex]] = data[keyList[index]][subKeyList[sIndex]];
-		} 
+		}
 	}
 
 	return output;
@@ -91,3 +102,7 @@ parser.parseProducts = function(data) {
 
 
 module.exports = parser;
+
+/* Check out the JavaScript functional tools for arrays (map, forEach, etc) --
+   they'd help you simplify some of the for-looping you're doing manually in this file.
+ */

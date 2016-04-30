@@ -26,7 +26,7 @@ pizzaRoutes.getStores = function(req, res) {
 };
 
 pizzaRoutes.getStoreMenu = function(req, res) {
-	var sendURL = menuURL.replace("STORE_ID", req.params.store_id);
+	var sendURL = menuURL.replace("STORE_ID", req.params.store_id); // this is clean :)
 
 	http.get(sendURL, function (response) {
 		var finalData = '';

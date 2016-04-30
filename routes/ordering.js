@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'); // not used in this file
 var pizzapi = require('dominos');
 var hasher = require('crypto');
 var iOrder = require('../models/individualOrderModel.js');
@@ -19,7 +19,7 @@ ordering.createOrder = function(req, res) {
 	friendsOrders.push(splitwiseId);
 
 	createdWOrder = {
-		firstName:firstName,
+		firstName:req.body.firstName,
 		lastName:lastName,
 		email:email,
 		address:address,
@@ -32,7 +32,7 @@ ordering.createOrder = function(req, res) {
 	// This should update
 	wOrder.findOneAndUpdate({splitwiseId:splitwiseId}, {$set:createdWOrder}, {upsert:true, new:true}, function (err, order) {
 		if(!err) {
-			newIOrder = createIndividualOrder(firstName + " " + lastName, splitwiseId, order._id);
+			var newIOrder = createIndividualOrder(firstName + " " + lastName, splitwiseId, order._id);
 
 			newIOrder.save(function (err, createdIOrder) {
 				if(!err) {
@@ -44,16 +44,36 @@ ordering.createOrder = function(req, res) {
 					res.json(output);
 
 				} else {
+					// nice error handling!
 					res.status(500).json({'message':'failed to add individual order'});
 				}
 			});
 		} else {
 			res.status(500).json({'message':'failed to add whole order'});
 		}
+
+		/*
+		An alternative, if you want to avoid the nested if/elses: return res.status(500).json(...) when you encounter an error.
+		That way, the "no error" case doesn't need to be inside an if block.
+		Something like...
+
+		if (err) {
+			return res.status(500).json(...)
+		}
+		var newIOrder = createIndividualOrder...
+		newIOrder.save(function(err, createdIOrder) {
+			if (err) {
+				return res.status(500).json(...)
+			}
+			var output = {};
+			...
+		});
+
+		*/
 	});
 }
 
-// WORKS
+// WORKS :)
 ordering.addCollaborator = function(req, res) {
 	var wOrderId = req.body.orderId;
 	var collaboratorSplitwiseId = req.body.collaboratorSplitwiseId;
@@ -61,7 +81,8 @@ ordering.addCollaborator = function(req, res) {
 
 	wOrder.findOneAndUpdate({_id:wOrderId}, {$push:{friendsOrders:collaboratorSplitwiseId}}, {new:true}, function (err, order) {
 		if(!err) {
-			newIOrder = createIndividualOrder(collaboratorName, collaboratorSplitwiseId, wOrderId);
+			// important to remember the var -- otherwise you're scoping globally
+			var newIOrder = createIndividualOrder(collaboratorName, collaboratorSplitwiseId, wOrderId);
 
 			newIOrder.save(function (err) {
 				if(!err) {
@@ -164,7 +185,7 @@ ordering.removeFromOrder = function(req, res) {
 			res.status(500).json({'message':'error removing item from order'});
 		}
 	});
-	
+
 }
 
 ordering.finalizeOrder = function(req, res) {
@@ -206,7 +227,8 @@ ordering.finalizeOrder = function(req, res) {
 						if(result.success) {
 							// THIS FUNCTION WOULD PAY FOR THE ORDER IF SUPPLIED CREDIT CARD INFORMATION
 							// WE CHOSE NOT TO IMPLEMENT THIS PART
-							
+							// no worries, sounds like a good choice -- thanks for the comment!
+
 							dominosOrder.place(function (placeResult) {
 								if(placeResult.success) {
 									wOrder.remove({_id:wholeOrderId}, function(err) {
@@ -237,12 +259,14 @@ ordering.finalizeOrder = function(req, res) {
 		} else {
 			res.status(500).json({'message':'Error finalizing order'});
 		}
+		// so much if/else nesting! This is a place where that if (err) return... trick (see comment above) could have helped you with conciseness
 	});
 
 }
 
 module.exports = ordering;
 
+// I like that this is abstracted into a function!
 var createIndividualOrder = function(name, id, wholeOrderId) {
 	return createdIOrder = new iOrder({
 		splitwiseId:id,
