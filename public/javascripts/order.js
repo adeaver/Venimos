@@ -5,7 +5,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 	$scope.individualOrder = null;
 	$scope.lookupAddress = false;
 	$scope.isOrderOwner = false;
-	$scope.groupId = null; 
+	$scope.groupId = null;
 
 	$scope.addresses = [];
 
@@ -31,32 +31,33 @@ app.controller('orderController', function ($scope, $http, $document) {
 	$scope.productKeyToShow = null;
 	$scope.productTypeToShow = null;
 
-	//total 
-	$scope.total = 0; 
+	//total
+	$scope.total = 0;
 
-	$scope.splitwiseUser = null; 
+	$scope.splitwiseUser = null;
 
 	$scope.collaborators = [];
 	$scope.friendsNotAdded = [];
 
-	$scope.charged = false;  
+	$scope.charged = false;
 
 
-	var createGroup = function(user){ 
-		// console.log("id" , mainId); 
+	var createGroup = function(user){
+		// console.log("id" , mainId);
 		$http.post('/createGroup', user)
-			.then(function(group){ 
-				$scope.groupId = group.data.id;  
-			})
+        //the convention is that promise .thens should be on the same indent level
+        .then(function(group){
+            $scope.groupId = group.data.id;
+        })
 	}
 
 
-	var addToExistingGroup = function(newUser, orderId){ 
+	var addToExistingGroup = function(newUser, orderId){
 		console.log("in add to existing group")
 
 		$http.post('/addToExistingGroup', {newCollaborator : newUser, groupId : $scope.groupId})
-			.then(function(something){ 
-				console.log("group", something); 
+			.then(function(something){
+				console.log("group", something);
 			})
 
 	}
@@ -64,22 +65,22 @@ app.controller('orderController', function ($scope, $http, $document) {
 	var getExistingOrder = function(groupId){
 		console.log("IN get exisiting order")
 		$http.get('/getExistingGroup', {groupId : $scope.groupId})
-			.then(function(something){ 
-				console.log("group", something); 
+			.then(function(something){
+				console.log("group", something);
 			})
 	}
 
-	var getUserFriends = function(){ 
+	var getUserFriends = function(){
 		$http.get('/getUserFriends')
 			.then(function(friends){
-				console.log("friends.data", friends.data);  
-				$scope.splitwiseFriends = friends.data; 
+				console.log("friends.data", friends.data);
+				$scope.splitwiseFriends = friends.data;
 				console.log('SPLITWISE FRIENDS', $scope.splitwiseFriends);
 				$scope.getSeparateCollaboratorsFromFriends();
 			})
 	}
- 
-	var getOrders = function(user){ 
+
+	var getOrders = function(user){
 		$http.get('/getOrdersForUser/' + user.id)
 			.then(function(response) {
 				//in here checkif the owner or if collaborator
@@ -95,8 +96,8 @@ app.controller('orderController', function ($scope, $http, $document) {
 	}
 
 	$http.get('/getUser')
-		.then(function(user){ 
-			$scope.splitwiseUser = user.data; 
+		.then(function(user){
+			$scope.splitwiseUser = user.data;
 
 			if($scope.splitwiseUser.id === undefined) {
 				window.location.href = '/';
@@ -105,7 +106,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 			getOrders($scope.splitwiseUser);
 			createGroup($scope.splitwiseUser);
 
-		}) 
+		})
 
 	// Functions
 
@@ -143,7 +144,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 			$scope.isOrderOwner = true;
 			getUserFriends();
 		});
-		
+
 		$scope.getMenu(id);
 	}
 
@@ -229,6 +230,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 	$scope.uncheck = function(name) {
 		var orderRadio = document.getElementsByClassName('orderRadio');
 
+        // could be a could map or forEach call, I think either would be a bit cleaner
 		for(var index = 0; index < orderRadio.length; index++) {
 			if(orderRadio[index].name != name) {
 				orderRadio[index].checked = false;
@@ -289,8 +291,8 @@ app.controller('orderController', function ($scope, $http, $document) {
 		}
 	}
 
-	$scope.payForTotal = function(){ 
-		$scope.charged = true; 
+	$scope.payForTotal = function(){
+		$scope.charged = true;
 		console.log("paying")
 		console.log("order id", $scope.order._id)
 
@@ -305,7 +307,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 		// *******THIS IS WHAT THE CODE WOULD LOOK LIKE IF THE API WOULD COOPERATE
 
 		// $http.post('/payForBill/' + $scope.order._id )
-		// 	.then(function(response){ 
+		// 	.then(function(response){
 
 		// 	$http.post('/finalizeOrder', {wholeOrderId:$scope.order._id})
 		// 		.then(function(response) {
@@ -322,7 +324,7 @@ app.controller('orderController', function ($scope, $http, $document) {
 		$scope.individualOrder = null;
 		$scope.lookupAddress = false;
 		$scope.isOrderOwner = false;
-		$scope.groupId = null; 
+		$scope.groupId = null;
 
 		$scope.addresses = [];
 
@@ -338,19 +340,19 @@ app.controller('orderController', function ($scope, $http, $document) {
 		$scope.productKeyToShow = null;
 		$scope.productTypeToShow = null;
 
-		//total 
-		$scope.total = 0; 
+		//total
+		$scope.total = 0;
 
 	}
 
-	$scope.removeUserFromGroup = function(userSplitwiseId){ 
-		if (!$scope.charged){ 
+	$scope.removeUserFromGroup = function(userSplitwiseId){
+		if (!$scope.charged){
 			$http.post('/removeUser', {userid: userSplitwiseId, groupid: $scope.groupId})
 				.then(function(response){ })
 
 		}
-		else { 
-			alert("cannot removed, already charged"); 
+		else {
+			alert("cannot removed, already charged");
 		}
 
 	}
